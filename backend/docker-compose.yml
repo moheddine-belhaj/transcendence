@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  backend:
+    build: .
+    ports:
+      - "5003:5003"
+    volumes:
+      - ./docker/db:/usr/src/app/data  # Persistent database storage
+      - ./src:/usr/src/app/src         # Live code reload
+      - ./public:/usr/src/app/public   # Static files
+    environment:
+      - NODE_ENV=development
+      - PORT=5003
+      - DB_PATH=/usr/src/app/data/database.sqlite
+    restart: unless-stopped

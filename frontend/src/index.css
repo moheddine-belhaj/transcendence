@@ -1,0 +1,85 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 222 35% 11%;
+    --foreground: 210 40% 98%;
+
+    --card: 222 35% 13%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 35% 13%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 252 79% 75%;
+    --primary-foreground: 222 47% 11%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 260 50% 55%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 50.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 25.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 252 79% 75%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 222 35% 9%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 252 79% 75%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 260 50% 35%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 222 35% 18%;
+    --sidebar-ring: 252 79% 75%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+    background-size: 50px 50px;
+  }
+}
+
+@layer components {
+  .space-button {
+    @apply bg-purple-gradient text-white font-medium rounded-md py-2 px-4 hover:opacity-90 transition-opacity;
+  }
+  
+  .space-card {
+    @apply bg-card rounded-lg border border-border shadow-lg backdrop-blur-sm;
+  }
+  
+  .status-indicator {
+    @apply w-3 h-3 rounded-full border-2 border-card absolute bottom-0 right-0;
+  }
+  
+  .status-online {
+    @apply bg-green-500;
+  }
+  
+  .status-offline {
+    @apply bg-gray-500;
+  }
+  
+  .status-away {
+    @apply bg-yellow-500;
+  }
+}
