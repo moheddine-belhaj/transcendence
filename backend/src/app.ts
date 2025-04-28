@@ -1,3 +1,4 @@
+
 import Fastify, { FastifyReply, FastifyRequest } from "fastify";
 import fjwt from "fastify-jwt";
 import userRoutes from "./modules/user/user.route";
@@ -6,13 +7,18 @@ import { userSchema } from "./modules/user/user.schema";
 
 export const server = Fastify();
 
+declare module "fastify" {
+  export interface FastifyInstance {
+    authenticate: any
+  }
+}
 server.register(fjwt, {
 
   secret: "42-secret-key"
 });
 
 
-server.decorate("auth", async (request:FastifyRequest, reply:FastifyReply) => {
+server.decorate("authenticate", async (request:FastifyRequest, reply:FastifyReply) => {
   try {
     await request.jwtVerify();
   } catch (err) {
@@ -36,5 +42,7 @@ for (const schema of Object.values(userSchema)) {
     process.exit(1);
   }
 }
+
+
 
 main();
