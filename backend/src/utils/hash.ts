@@ -9,7 +9,7 @@ export function hashpassword(password: string) {
 
 }
 
-export function verifypassword({
+export function verifyPassword({
     condidatepassword,
     salt,
     hash,
