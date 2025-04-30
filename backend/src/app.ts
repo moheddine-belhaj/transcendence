@@ -31,7 +31,8 @@ async function registerPlugins() {
 
   // CORS setup
   server.register(cors, {
-    origin: 'http://localhost:5173', // Vite default port
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
   })
   // Authentication decorator

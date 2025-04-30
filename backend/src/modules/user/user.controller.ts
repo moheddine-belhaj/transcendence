@@ -53,7 +53,11 @@ export async function loginHandler(
       
         return reply
           .code(200)
-          .send({ access_token: token, user: userWithoutPassword });
+          .send({ access_token: token, user: {
+            id: user.id,
+            email: user.email,
+            name: user.name
+          }});
       } 
 
     return reply.code(401).send({ error: "Invalid email or password" });

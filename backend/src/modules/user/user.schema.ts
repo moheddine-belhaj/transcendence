@@ -43,6 +43,14 @@ const loginResponseSchema = z.object({
         required_error: 'Access token is required',
         invalid_type_error: 'Access token must be a string',
     }),
+    user: z.object({
+        id: z.number({
+            required_error: 'ID is required',
+            invalid_type_error: 'ID must be a number',
+        }),
+        email: z.string(),
+        name: z.string(),
+    }),
 });
 
     const loginSchema = z.object({ 
