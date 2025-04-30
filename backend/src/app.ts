@@ -1,48 +1,93 @@
-
 import Fastify, { FastifyReply, FastifyRequest } from "fastify";
-import fjwt from "fastify-jwt";
+import fjwt from "@fastify/jwt";
+import cors from "@fastify/cors";
 import userRoutes from "./modules/user/user.route";
 import { userSchema } from "./modules/user/user.schema";
 
+export const server = Fastify({
+  logger: true
+});
 
-export const server = Fastify();
-
+// Type extensions
 declare module "fastify" {
-  export interface FastifyInstance {
-    authenticate: any
+  interface FastifyInstance {
+    authenticate: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
+  }
+  interface FastifyRequest {
+    customUser?: {
+      id: number;
+      email: string;
+      name: string;
+    };
   }
 }
-server.register(fjwt, {
 
-  secret: "42-secret-key"
-});
+// Register plugins
+async function registerPlugins() {
+  // JWT setup
+  await server.register(fjwt, {
+    secret: process.env.JWT_SECRET || "42-secret-key"
+  });
 
+  // CORS setup
+  server.register(cors, {
+    origin: 'http://localhost:5173', // Vite default port
+    credentials: true
+  })
+  // Authentication decorator
+  server.decorate("authenticate", async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+      await request.jwtVerify();
+      const token = request.headers.authorization?.replace('Bearer ', '');
+      if (!token) {
+        throw new Error("Authorization token is missing");
+      }
+      const decoded = server.jwt.decode(token);
+      if (!decoded) {
+        throw new Error("Invalid token");
+      }
+      request.customUser = decoded as { id: number; email: string; name: string };
+    } catch (err) {
+      reply.code(401).send({ error: "Unauthorized" });
+    }
+  });
+}
 
-server.decorate("authenticate", async (request:FastifyRequest, reply:FastifyReply) => {
-  try {
-    await request.jwtVerify();
-  } catch (err) {
-    reply.send(err);
+// Register routes
+async function registerRoutes() {
+  // Add schemas
+  for (const schema of Object.values(userSchema)) {
+    server.addSchema(schema);
   }
 
+  // Register user routes
+  await server.register(userRoutes, { prefix: "/api/users" });
+
+  // Health check endpoint
+server.get('/api/health', async () => {
+  return { 
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  };
 });
-
-async function main() {
-
-for (const schema of Object.values(userSchema)) {
-    server.addSchema(schema); // Register each schema
-  }
-
-    server.register(userRoutes, { prefix: "api/users" });
+}
+// Start server
+async function startServer() {
   try {
-    await server.listen({ port: 3000, host: '0.0.0.0' });
-    console.log("Server is running on port 3000");
+    await registerPlugins();
+    await registerRoutes();
+
+    const port = parseInt(process.env.PORT || "3000");
+    const host = process.env.HOST || "0.0.0.0";
+
+    await server.listen({ port, host });
+    console.log(`Server running on http://${host}:${port}`);
   } catch (err) {
     server.log.error(err);
     process.exit(1);
   }
 }
 
-
-
-main();
+// Start the application
+startServer();

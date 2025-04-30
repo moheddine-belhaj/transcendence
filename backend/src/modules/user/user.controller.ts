@@ -48,9 +48,13 @@ export async function loginHandler(
         salt: user.salt,
     });
     if (correctPassword) {
-        const {password, salt, ...rest} = user;
-        return {access_token: server.jwt.sign(rest)};
-    }   
+        const { password, salt, ...userWithoutPassword } = user;
+        const token = server.jwt.sign(userWithoutPassword);
+      
+        return reply
+          .code(200)
+          .send({ access_token: token, user: userWithoutPassword });
+      } 
 
     return reply.code(401).send({ error: "Invalid email or password" });
 
@@ -60,7 +64,11 @@ export async function loginHandler(
 export async function getUserhandler(
     request: FastifyRequest,
     reply: FastifyReply
-) {
-    const user = findUsers()
-    return user;
-}   
+  ) {
+    try {
+      const users = await findUsers();
+      return reply.code(200).send(users);
+    } catch (error) {
+      return reply.code(500).send({ error: "Internal Server Error" });
+    }
+  }
