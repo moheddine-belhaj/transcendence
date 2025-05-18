@@ -16,7 +16,22 @@ logs/
 .env
 .env.local
 .env.*.local
+devops/.env
 
+## certs
+**/certs.zip
+**/ca.zip
+**/instances.yml
+**/*.crt
+**/*.key
+**/*.pem
+#data
+devops/esdata01/
+devops/esdata02/
+devops/esdata03/
+devops/kibanadata/
+devops/logstashdata01/
+devops/certs/
 # Build output
 dist/
 build/
