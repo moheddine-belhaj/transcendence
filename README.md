@@ -1,5 +1,19 @@
 # transcendence
 42 transcendence
 
+### Backend
 
-hello front
+```sh
+npm install --legacy-peer-deps
+```
+
+```sh
+npm run dev
+
+```
+
+### frontend
+
+```sh
+npm install
+```
