@@ -1,4 +1,5 @@
-import { UserService, User } from '../api/users';
+import { UserService } from '../api/users';
+
 
 export class UserList {
   constructor(private container: HTMLElement) {}
