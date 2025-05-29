@@ -1,11 +1,10 @@
-version: '3.8'
 
 services:
   backend:
   
     build:
       context: .
-      dockerfile: ./backend/Dockerfile
+      dockerfile: ./Dockerfile
     ports:
       - "3000:3000"
     volumes:
@@ -13,4 +12,10 @@ services:
       - /usr/src/app/node_modules
     environment:
       - NODE_ENV=development
+      - DATABASE_URL=file:/usr/src/app/prisma/dev.db
+    networks:
+      - app-network
     restart: unless-stopped
+networks:
+  app-network:
+    driver: bridge
