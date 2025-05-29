@@ -1,9 +1,10 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { createUser, findUserByEmail, findUsers } from "./user.service";
-import { CreateUserInput, LoginInput } from "./user.schema";
+import { addFriend, createUser, deleteFriend, findUserByEmail, findUsers, updateFriendStatus } from "./user.service";
+import { CreateUserInput, LoginInput ,AddFriendInput} from "./user.schema";
 import { access } from "fs";
 import { server } from "../../app";
 import { verifyPassword } from "../../utils/hash";
+import prisma from "../../utils/prisma";
 
 export async function registerUserHandler(
     request:FastifyRequest <{
@@ -76,3 +77,139 @@ export async function getUserhandler(
       return reply.code(500).send({ error: "Internal Server Error" });
     }
   }
+
+
+export async function getFriends(userId: number) {
+  return prisma.friend.findMany({
+    where: {
+      OR: [
+        { user_user_ind: userId, status: 'accepted' },
+        { friend_user_ind: userId, status: 'accepted' }
+      ]
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          email: true,
+          name: true
+        }
+      },
+      friendUser: {
+        select: {
+          id: true,
+          email: true,
+          name: true
+        }
+      }
+    }
+  });
+}
+
+export async function addFriendHandler(
+  request: FastifyRequest<{ Body: AddFriendInput }>,
+  reply: FastifyReply
+) {
+  try {
+    const { userId, friendId } = request.body as AddFriendInput;
+    const friendship = await addFriend(userId, friendId);
+    return reply.code(201).send(friendship);
+  } catch (error) {
+    console.error(error);
+    let statusCode = 500;
+    let errorMessage = "Internal Server Error";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+      statusCode = error.message.includes('not found') ? 404 :
+                   error.message.includes('already exists') ? 409 :
+                   error.message.includes('yourself') ? 400 : 500;
+    }
+    return reply.code(statusCode).send({ error: errorMessage });
+  }
+}
+
+export async function getFriendsHandler(
+  request: FastifyRequest<{ Params: { userId: number } }>,
+  reply: FastifyReply
+) {
+  try {
+    const friends = await getFriends(request.params.userId);
+    return reply.code(200).send(friends);
+  } catch (error) {
+    console.error(error);
+    return reply.code(500).send({ error: "Internal Server Error" });
+  }
+}
+
+// export async function acceptFriendHandler(
+//   request: FastifyRequest<{ Body: { userId: number; friendId: number } }>,
+//   reply: FastifyReply
+// ) {
+//   try {
+//     const { userId, friendId } = request.body as { userId: number; friendId: number };
+//     const updatedFriendship = await updateFriendStatus(userId, friendId, 'accepted');
+//     return reply.code(200).send(updatedFriendship);
+//   } catch (error) {
+//     console.error(error);
+//     let statusCode = 400;
+//     let errorMessage = "An error occurred";
+//     if (error instanceof Error) {
+//       statusCode = error.message.includes('No pending') ? 404 : 400;
+//       errorMessage = error.message;
+//     }
+//     return reply.code(statusCode).send({ error: errorMessage });
+//   }
+// }
+
+export async function acceptFriendHandler(
+  request: FastifyRequest<{ Body: { userId: number, friendId: number } }>,
+  reply: FastifyReply
+) {
+  try {
+    const { userId, friendId } = request.body;
+    const result = await updateFriendStatus(userId, friendId, 'accept');
+    return reply.code(200).send(result);
+  } catch (error) {
+    console.error(error);
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+    return reply.code(400).send({ error: errorMessage });
+  }
+}
+
+
+
+
+export async function refuseFriendHandler(
+  request: FastifyRequest<{ Body: { userId: number, friendId: number } }>,
+  reply: FastifyReply
+) {
+  try {
+    const { userId, friendId } = request.body;
+    const result = await updateFriendStatus(userId, friendId, 'refuse');
+    return reply.code(200).send(result);
+  } catch (error) {
+    console.error(error);
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+    return reply.code(400).send({ error: errorMessage });
+  }
+}
+
+export async function deleteFriendHandler(
+  request: FastifyRequest<{ Body: { userId: number, friendId: number } }>,
+  reply: FastifyReply
+) {
+  try {
+    const { userId, friendId } = request.body;
+    await deleteFriend(userId, friendId);
+    return reply.code(200).send({ message: 'Friend successfully removed' });
+  } catch (error) {
+    console.error(error);
+    let statusCode = 400;
+    let errorMessage = "An unknown error occurred";
+    if (error instanceof Error) {
+      statusCode = error.message.includes('No friendship') ? 404 : 400;
+      errorMessage = error.message;
+    }
+    return reply.code(statusCode).send({ error: errorMessage });
+  }
+}

@@ -36,6 +36,16 @@ or with docker
 docker-compose up
 ```
 
+Create fresh migration
+```sh
+- npx prisma migrate dev --name init
+```
+
+- Delete Database
+
+```sh
+rm -r prisma/migrations/ && rm prisma/dev.db
+```
 
 
 ### frontend
@@ -51,3 +61,5 @@ npm run dev
 ```
 
 - http://localhost:5173
+
+

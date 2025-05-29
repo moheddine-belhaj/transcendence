@@ -14,20 +14,35 @@ datasource db {
 
 
 model User {
-  id Int @id @default(autoincrement())
-  email String @unique
-  name String?
-  password String
-  salt String
-  products Product[]
+  id          Int       @id @default(autoincrement())
+  name    String    @unique
+  password    String
+  email       String    @unique
+  salt        String
+  twoFAsecret String?   @map("2FA secret")
+  friends     Friend[]  @relation("UserAsFriend")
+  friendOf    Friend[]  @relation("FriendOfUser")
+  oauth       OAuth2_0[]
+
+  @@map("User")
 }
 
-model Product {
-  id Int @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  content String?
-  price Float
-  owner User @relation(fields: [ownerId], references: [id])
-  ownerId Int
+model Friend {
+  user_user_ind   Int     @map("user/user_ind")
+  friend_user_ind Int     @map("friend/user_ind")
+  status          String
+  user            User    @relation("FriendOfUser", fields: [user_user_ind], references: [id])
+  friendUser      User    @relation("UserAsFriend", fields: [friend_user_ind], references: [id])
+
+  @@id([user_user_ind, friend_user_ind])
+  @@map("Friend")
+}
+
+model OAuth2_0 {
+  user_id      Int
+  service_type String
+  user         User    @relation(fields: [user_id], references: [id])
+
+  @@id([user_id, service_type])
+  @@map("OAuth 2.0")
 }
