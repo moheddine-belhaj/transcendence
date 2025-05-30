@@ -1,4 +1,7 @@
 import { App } from './App';
 
-// Initialize the application
-new App();
+// Initialize application when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('Application starting...');
+  new App();
+})

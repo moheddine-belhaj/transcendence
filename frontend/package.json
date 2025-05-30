@@ -9,7 +9,9 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@rollup/plugin-html": "^2.0.0",
     "@types/node": "^22.15.3",
+    "raw-loader": "^4.0.2",
     "typescript": "~5.7.2",
     "vite": "^6.3.1"
   }
