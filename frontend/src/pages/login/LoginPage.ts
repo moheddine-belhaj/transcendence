@@ -1,5 +1,5 @@
 import { BasePage } from '../../core/BasePage';
-import template from './home-page.html'
+import template from './login-page.html'
 import { AuthService } from '../../api';
 
 

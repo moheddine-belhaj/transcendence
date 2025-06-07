@@ -5,24 +5,34 @@ export abstract class BaseComponent<PropsType = any> {
 
   constructor(props: PropsType) {
     this.props = props;
-    this.element = document.createElement('div');
+    this.element = document.createElement('div'); // Default container
   }
 
   // Must be implemented by child components
-  abstract render(): HTMLElement;
+  protected abstract render(): string;
 
-  // Helper method to dispatch custom events
-  protected dispatchEvent(eventName: string, detail?: any) {
+  // Public method to get the DOM element
+  public mount(): HTMLElement {
+    this.element.innerHTML = this.render();
+    this.setupEventListeners();
+    return this.element;
+  }
+
+  // Optional event listener setup
+  protected setupEventListeners(): void {}
+
+  // Helper to dispatch custom events
+  protected emit(eventName: string, detail?: any): void {
     this.element.dispatchEvent(
-      new CustomEvent(eventName, { 
+      new CustomEvent(eventName, {
         bubbles: true,
-        detail 
+        detail
       })
     );
   }
 
   // Cleanup method
-  destroy() {
-    this.element.remove();
+  public destroy(): void {
+    this.element.innerHTML = '';
   }
 }

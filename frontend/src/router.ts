@@ -1,17 +1,16 @@
 import { BasePage } from "./core/BasePage";
-import { appRoutes } from "./routes";
+import { appRoutes, RouteConfig, RoutePath } from "./routes";
+import { isAuthenticated } from "./utils/auth";
 
-type RouteHandler = new () => BasePage;
-type Routes = Record<string, RouteHandler>;
 
 interface Router {
   start: () => void;
   navigate: (path: string) => void;
-  registerRoutes: (routes: Routes) => void;
+  registerRoutes: (routes: RouteConfig) => void;
 }
 
 let currentPage: BasePage | null = null;
-let routes: Routes = appRoutes;
+let routes: RouteConfig = appRoutes;
 
 export function createRouter(): Router {
   const container = document.getElementById('app') as HTMLElement;
@@ -19,10 +18,17 @@ export function createRouter(): Router {
     throw new Error('App container not found');
   }
   async function handleRouteChange() {
-    const path = window.location.pathname.replace(/\/$/, '') || '/';
-    console.log(`Routing to: ${path}`);
-
-    const PageComponent = routes[path] || routes['*'];
+    const path = window.location.pathname as RoutePath;
+    const currentRoute = routes[path] || routes['*']
+    if (path == '/' && !isAuthenticated())
+      return navigate('/login')
+    if (path == '/' && isAuthenticated())
+      return navigate('/dashboard')
+    if (currentRoute?.requiresAuth  && !isAuthenticated())
+      return navigate('/')
+    if (!currentRoute.requiresAuth && isAuthenticated())
+      return navigate('/dashboard')
+    const PageComponent = currentRoute.page || routes['*'].page;
     if (!PageComponent) {
       console.error('No component found for route');
       return;
@@ -56,7 +62,7 @@ export function createRouter(): Router {
     console.log('Router started');
   }
 
-  function registerRoutes(newRoutes: Routes) {
+  function registerRoutes(newRoutes: RouteConfig) {
     routes = { ...routes, ...newRoutes };
     console.log('Registered routes:', Object.keys(newRoutes));
   }

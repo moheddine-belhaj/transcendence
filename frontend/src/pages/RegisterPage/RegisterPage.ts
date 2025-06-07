@@ -47,9 +47,12 @@ export class RegisterPage extends BasePage {
       return
     }
      try {
-        await AuthService.register(this.registerForm);
-        const message = this.container.querySelector('#register-message') as HTMLElement;
-        message.textContent = 'Registration successful! Please login.';
+        const response = await AuthService.register(this.registerForm);
+      if (response.id)
+      {
+          alert("User registered succesfuly you can now sign in !")
+            this.navigateTo('/login')
+        }
       } catch (error) {
         alert('Something went wrong ! could not register user')
       }

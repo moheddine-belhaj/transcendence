@@ -1,12 +1,9 @@
 import { BasePage } from '../../core/BasePage'
+import template from './not-found-page.html'
+
 export class NotFoundPage extends BasePage {
   protected async loadTemplate(): Promise<string> {
-    return `
-      <div class="not-found">
-        <h1>404 - Page Not Found</h1>
-        <a href="/" id="home-link">Return to Home</a>
-      </div>
-    `;
+    return template
   }
 
   protected initEventListeners(): void {

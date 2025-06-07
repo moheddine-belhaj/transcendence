@@ -15,5 +15,4 @@ export function isAuthenticated(): boolean {
   export function logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    window.location.href = '/login';
   }
