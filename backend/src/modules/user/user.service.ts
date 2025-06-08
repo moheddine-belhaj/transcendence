@@ -1,6 +1,6 @@
-import { hashpassword } from "../../utils/hash";
+import { hashpassword, verifyPassword } from "../../utils/hash";
 import prisma from "../../utils/prisma";
-import { CreateUserInput } from "./user.schema";
+import { CreateUserInput, UpdateUserInput } from "./user.schema";
 
 export async function createUser(input : CreateUserInput){
 const { password, ...rest } = input;
@@ -182,4 +182,120 @@ export async function deleteFriend(userId: number, friendId: number) {
       }
     }
   });
+}
+
+
+export async function getUserFriendsList(userId: number) {
+  const friendships = await prisma.friend.findMany({
+    where: {
+      OR: [
+        { 
+          user_user_ind: userId, 
+          status: 'accepted' 
+        },
+        { 
+          friend_user_ind: userId, 
+          status: 'accepted' 
+        }
+      ]
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          avatar: true
+        }
+      },
+      friendUser: {
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          avatar: true
+        }
+      }
+    }
+  });
+
+  // Transform the friendships into a simple list of friends
+  return friendships.map(friendship => {
+    // Determine which user is the friend (not the current user)
+    return friendship.user_user_ind === userId 
+      ? friendship.friendUser 
+      : friendship.user;
+  });
+
+
+
+
+
+}
+
+  export async function updateUser(
+  userId: number,
+  input: UpdateUserInput
+) {
+  const { currentPassword, newPassword, ...rest } = input;
+  const updateData: any = { ...rest };
+
+  // If password is being changed
+  if (newPassword) {
+    if (!currentPassword) {
+      throw new Error('Current password is required to change password');
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId }
+    });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Verify current password
+    const correctPassword = verifyPassword({
+      condidatepassword: currentPassword,
+      hash: user.password,
+      salt: user.salt,
+    });
+
+    if (!correctPassword) {
+      throw new Error('Current password is incorrect');
+    }
+
+    // Hash new password
+    const { hash, salt } = hashpassword(newPassword);
+    updateData.password = hash;
+    updateData.salt = salt;
+  }
+
+  // Check if email is being updated to one that already exists
+  if (updateData.email) {
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        email: updateData.email,
+        NOT: {
+          id: userId
+        }
+      }
+    });
+
+    if (existingUser) {
+      throw new Error('Email already in use by another account');
+    }
+  }
+
+  const updatedUser = await prisma.user.update({
+    where: { id: userId },
+    data: updateData,
+    select: {
+      id: true,
+      email: true,
+      name: true
+    }
+  });
+
+  return updatedUser;
 }

@@ -1,0 +1,7 @@
+TODO List
+
+- [X] Delete the database and check game CRUD properly
+- [ ] Create upload picture
+- [ ] Check the 2FA authentication with email
+- [ ] Check Google auth
+- [ ] The GAME with websockets :)

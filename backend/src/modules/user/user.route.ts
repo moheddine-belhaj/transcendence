@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
-import { $ref } from "./user.schema";
-import { acceptFriendHandler, addFriendHandler, deleteFriendHandler, getFriendsHandler, getUserhandler, loginHandler, refuseFriendHandler, registerUserHandler } from "./user.controller";
+import { $ref, UpdateUserInput } from "./user.schema";
+import { acceptFriendHandler, addFriendHandler, deleteFriendHandler, getFriendsHandler, getUserFriendsListHandler, getUserhandler, loginHandler, refuseFriendHandler, registerUserHandler, updateUserHandler } from "./user.controller";
 import { z } from "zod";
 
 async function userRoutes(server: FastifyInstance) {
@@ -106,6 +106,53 @@ server.delete<{
   },
   preHandler: [server.authenticate]
 }, deleteFriendHandler);
+
+server.get<{ Params: { userId: number } }>('/friends/list/:userId', {
+  schema: {
+    params: {
+      type: 'object',
+      properties: {
+        userId: { type: 'number' }
+      },
+      required: ['userId']
+    },
+    response: {
+      200: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            id: { type: 'number' },
+            email: { type: 'string' },
+            name: { type: 'string' },
+            avatar: { type: 'string', nullable: true }
+          }
+        }
+      }
+    }
+  },
+  preHandler: [server.authenticate]
+}, getUserFriendsListHandler);
+
+server.put<{
+  Params: { userId: number };
+  Body: UpdateUserInput;
+}>('/update/:userId', {
+  schema: {
+    params: {
+      type: 'object',
+      properties: {
+        userId: { type: 'number' }
+      },
+      required: ['userId']
+    },
+    body: $ref('updateUserSchema'),
+    response: {
+      200: $ref('updateUserResponseSchema')
+    }
+  },
+  preHandler: [server.authenticate]
+}, updateUserHandler);
 
 
 }

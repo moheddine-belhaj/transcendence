@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { addFriend, createUser, deleteFriend, findUserByEmail, findUsers, updateFriendStatus } from "./user.service";
-import { CreateUserInput, LoginInput ,AddFriendInput} from "./user.schema";
+import { addFriend, createUser, deleteFriend, findUserByEmail, findUsers, getUserFriendsList, updateFriendStatus, updateUser } from "./user.service";
+import { CreateUserInput, LoginInput ,AddFriendInput, UpdateUserInput} from "./user.schema";
 import { access } from "fs";
 import { server } from "../../app";
 import { verifyPassword } from "../../utils/hash";
@@ -210,6 +210,53 @@ export async function deleteFriendHandler(
       statusCode = error.message.includes('No friendship') ? 404 : 400;
       errorMessage = error.message;
     }
+    return reply.code(statusCode).send({ error: errorMessage });
+  }
+}
+
+export async function getUserFriendsListHandler(
+  request: FastifyRequest<{ Params: { userId: number } }>,
+  reply: FastifyReply
+) {
+  try {
+    const friends = await getUserFriendsList(request.params.userId);
+    return reply.code(200).send(friends);
+  } catch (error) {
+    console.error(error);
+    return reply.code(500).send({ error: "Internal Server Error" });
+  }
+}
+
+export async function updateUserHandler(
+  request: FastifyRequest<{
+    Params: { userId: number };
+    Body: UpdateUserInput;
+  }>,
+  reply: FastifyReply
+) {
+  try {
+    // Verify the requesting user can only update their own profile
+    if (request.user.id !== request.params.userId) {
+      return reply.code(403).send({ error: 'You can only update your own profile' });
+    }
+
+    const updatedUser = await updateUser(request.params.userId, request.body);
+    return reply.code(200).send(updatedUser);
+  } catch (error) {
+    console.error(error);
+    let statusCode = 500;
+    let errorMessage = "Internal Server Error";
+    
+    if (error instanceof Error) {
+      if (error.message.includes('Current password') || 
+          error.message.includes('Email already')) {
+        statusCode = 400;
+      } else if (error.message.includes('User not found')) {
+        statusCode = 404;
+      }
+      errorMessage = error.message;
+    }
+    
     return reply.code(statusCode).send({ error: errorMessage });
   }
 }
