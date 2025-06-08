@@ -38,12 +38,15 @@ export type AddFriendInput = z.infer<typeof friendSchema>;
 export type RefuseFriendInput = z.infer<typeof refuseFriendSchema>;
 export type AcceptFriendInput = z.infer<typeof acceptFriendSchema>;
 export type DeleteFriendInput = z.infer<typeof deleteFriendSchema>;
+export type UpdateUserInput = z.infer<typeof updateUserSchema>;
+export type UpdateUserResponse = z.infer<typeof updateUserResponseSchema>;
 
 
 // match schemas
 export type CreateMatchInput = z.infer<typeof createMatchSchema>;
 export type UpdateMatchInput = z.infer<typeof updateMatchSchema>;
 export type MatchResponse = z.infer<typeof matchResponseSchema>;
+
 
 const loginResponseSchema = z.object({
     access_token: z.string({
@@ -57,6 +60,7 @@ const loginResponseSchema = z.object({
         }),
         email: z.string(),
         name: z.string(),
+        avatar: z.string().optional(),
     }),
 });
 
@@ -122,6 +126,19 @@ const matchResponseSchema = z.object({
   matchDate: z.date()
 });
 
+const updateUserSchema = z.object({
+  name: z.string().optional(),
+  email: z.string().email().optional(),
+  currentPassword: z.string().optional(),
+  newPassword: z.string().optional()
+});
+
+const updateUserResponseSchema = z.object({
+  id: z.number(),
+  email: z.string(),
+  name: z.string()
+});
+
 // Update the buildJsonSchemas call to include the new schema
 export const {schemas:userSchema, $ref} = buildJsonSchemas({
     createUserSchema,
@@ -132,6 +149,8 @@ export const {schemas:userSchema, $ref} = buildJsonSchemas({
     refuseFriendSchema,
     friendSchema,
     friendResponseSchema,
+    updateUserSchema,
+    updateUserResponseSchema,
     acceptFriendSchema
 });
 

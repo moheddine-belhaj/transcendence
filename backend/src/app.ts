@@ -2,7 +2,11 @@ import Fastify, { FastifyReply, FastifyRequest } from "fastify";
 import fjwt from "@fastify/jwt";
 import cors from "@fastify/cors";
 import userRoutes from "./modules/user/user.route";
+import matchRoutes from "./modules/match/match.routes";
+import { matchSchemas } from "./modules/match/match.schema";
 import { userSchema } from "./modules/user/user.schema";
+import avatarRoutes from './modules/avatar/avatar.routes';
+import fastifyMultipart from "@fastify/multipart";
 
 export const server = Fastify({
   logger: true
@@ -29,6 +33,12 @@ async function registerPlugins() {
     secret: process.env.JWT_SECRET || "42-secret-key"
   });
 
+  //   await server.register(fastifyMultipart, {
+  //   limits: {
+  //     fileSize: 5 * 1024 * 1024, // 5MB limit
+  //     files: 1 // Only allow one file
+  //   }
+  // })
   // CORS setup
   server.register(cors, {
     origin: 'http://localhost:5173',
@@ -44,7 +54,7 @@ async function registerPlugins() {
         throw new Error("Authorization token is missing");
       }
       const decoded = server.jwt.decode(token);
-      if (!decoded) {
+      if (!decoded || typeof decoded !== 'object') {
         throw new Error("Invalid token");
       }
       request.customUser = decoded as { id: number; email: string; name: string };
@@ -57,12 +67,14 @@ async function registerPlugins() {
 // Register routes
 async function registerRoutes() {
   // Add schemas
-  for (const schema of Object.values(userSchema)) {
+  for  (const schema of [...Object.values(userSchema), ...Object.values(matchSchemas)])  {
     server.addSchema(schema);
   }
 
   // Register user routes
   await server.register(userRoutes, { prefix: "/api/users" });
+  await server.register(matchRoutes, { prefix: "/api/matches" });
+    // await server.register(avatarRoutes, { prefix: '/api/users' });
 
   // Health check endpoint
 server.get('/api/health', async () => {

@@ -15,18 +15,37 @@ datasource db {
 
 model User {
   id          Int       @id @default(autoincrement())
-  name    String    @unique
+  name        String    @unique
   password    String
   email       String    @unique
   salt        String
+  avatar      String?   @default("default-avatar.png") 
   twoFAsecret String?   @map("2FA secret")
   friends     Friend[]  @relation("UserAsFriend")
   friendOf    Friend[]  @relation("FriendOfUser")
   oauth       OAuth2_0[]
+  matchesAsPlayer1 Match[] @relation("Player1Matches")
+  matchesAsPlayer2 Match[] @relation("Player2Matches")
+  wonMatches  Match[]   @relation("WinnerMatches")  // Add this line
 
   @@map("User")
 }
 
+model Match {
+  id          Int      @id @default(autoincrement())
+  player1Id   Int
+  player2Id   Int
+  player1     User     @relation("Player1Matches", fields: [player1Id], references: [id])
+  player2     User     @relation("Player2Matches", fields: [player2Id], references: [id])
+  scorePlayer1 Int
+  scorePlayer2 Int
+  winnerId    Int?
+  winner      User?    @relation("WinnerMatches", fields: [winnerId], references: [id])  // Add relation name
+  matchDate   DateTime @default(now())
+  status      String   @default("completed") // or "pending", "cancelled"
+
+  @@map("Match")
+}
 model Friend {
   user_user_ind   Int     @map("user/user_ind")
   friend_user_ind Int     @map("friend/user_ind")
