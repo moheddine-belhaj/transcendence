@@ -5,23 +5,38 @@
 
 ### FIRST THING TO DO
 
+- Use this command to install any dependencies
+
 ```sh
 npm install --legacy-peer-deps
 ```
-
-create .env
+- create .env
 
 ```sh
 touch .env
 ```
 
-```text
-DATABASE_URL="file:./dev.db"
 ```
+DATABASE_URL="file:./dev.db"
+
+// Send verification email variable
+EMAIL_SERVICE=gmail # or your email provider
+EMAIL_USER= # Your full email address
+EMAIL_PASSWORD= # Not your regular password! ASK MOHEDDINE
+EMAIL_FROM="Your App Name <Transcendence <noreply@transcendence.com>>"
+BASE_URL=http://localhost: # frontend
+```
+
+> to run the Email Verification:
+</br>
+> 1- go to https://myaccount.google.com/ then activate 2-step Verification 
+</br>
+> 2- Search for App Passwords in the same page
+</br>
+> 3- Create an app then save the password and use it for EMAIL_PASSWORD
 
 ```sh
 npm run dev
-
 ```
 
 - server run - http://localhost:3000
@@ -45,11 +60,24 @@ rm -r prisma/migrations/ && rm prisma/dev.db
 ```
 ## ENDPOINTS
 
-#### User Management
+### User Management
 - Create user [POST] 
 
 ```
 http://localhost:3000/api/users/
+```
+```
+{
+  "email": "m@m.com",
+  "name": "User 21",
+  "password": "password"
+}
+
+```
+
+- Verify Email [GET]
+```
+http://localhost:3000/api/users/verify-email?token=
 ```
 
 - Get all Users [GET]
@@ -62,7 +90,12 @@ http://localhost:3000/api/users
 ```
 http://localhost:3000/api/users/login
 ```
-
+```
+{
+  "email": "m@m.com",
+  "password": "password"
+}
+```
 - Update User [PUT]
 
 ```
@@ -77,7 +110,7 @@ http://localhost:3000/api/users/update/1
 }
 ```
 
-#### Friends management
+### Friends management
 
 - Add friend [POST]
 
@@ -138,7 +171,7 @@ http://localhost:3000/api/users/friends
 }
 ```
 
-#### Match Management
+### Match Management
 
 - Create Game [POST]
 

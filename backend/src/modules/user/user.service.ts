@@ -1,18 +1,66 @@
 import { hashpassword, verifyPassword } from "../../utils/hash";
+import { generateVerificationToken, sendVerificationEmail } from "../../utils/mailer";
 import prisma from "../../utils/prisma";
 import { CreateUserInput, UpdateUserInput } from "./user.schema";
 
-export async function createUser(input : CreateUserInput){
-const { password, ...rest } = input;
-const { hash, salt } = hashpassword(password);
+// export async function createUser(input : CreateUserInput){
+// const { password, ...rest } = input;
+// const { hash, salt } = hashpassword(password);
 
-const user = await prisma.user.create({
-    data: {...rest, salt,password: hash},
- });
- return user;
+// const user = await prisma.user.create({
+//     data: {...rest, salt,password: hash},
+//  });
+//  return user;
+// }
+
+export async function createUser(input: CreateUserInput) {
+  const { password, ...rest } = input;
+  const { hash, salt } = hashpassword(password);
+  const verificationToken = generateVerificationToken();
+
+  try {
+    const user = await prisma.user.create({
+      data: {
+        ...rest,
+        password: hash,
+        salt,
+        verificationToken,
+        isVerified: false,
+        verificationTokenExpires: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
+      }
+    });
+
+    // Send verification email and await it
+    await sendVerificationEmail({
+      email: user.email,
+      name: user.name,
+      verificationToken
+    });
+
+    return user;
+  } catch (error) {
+    console.error('User creation failed:', error);
+    throw error;
+  }
 }
 
+export async function verifyUserEmail(token: string) {
+  const user = await prisma.user.findFirst({
+    where: { verificationToken: token },
+  });
 
+  if (!user) {
+    throw new Error('Invalid verification token');
+  }
+
+  return prisma.user.update({
+    where: { id: user.id },
+    data: {
+      isVerified: true,
+      verificationToken: null, // Clear the token after verification
+    },
+  });
+}
 
 export async function findUserByEmail(email: string) {
 

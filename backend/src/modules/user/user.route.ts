@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { $ref, UpdateUserInput } from "./user.schema";
-import { acceptFriendHandler, addFriendHandler, deleteFriendHandler, getFriendsHandler, getUserFriendsListHandler, getUserhandler, loginHandler, refuseFriendHandler, registerUserHandler, updateUserHandler } from "./user.controller";
+import { acceptFriendHandler, addFriendHandler, deleteFriendHandler, getFriendsHandler, getUserFriendsListHandler, getUserhandler, loginHandler, refuseFriendHandler, registerUserHandler, updateUserHandler, verifyEmailHandler } from "./user.controller";
 import { z } from "zod";
 
 async function userRoutes(server: FastifyInstance) {
@@ -154,7 +154,31 @@ server.put<{
   preHandler: [server.authenticate]
 }, updateUserHandler);
 
-
+server.get('/verify-email', {
+  schema: {
+    querystring: {
+      type: 'object',
+      required: ['token'],
+      properties: {
+        token: { type: 'string' }
+      }
+    },
+    response: {
+      200: {
+        type: 'object',
+        properties: {
+          message: { type: 'string' }
+        }
+      },
+      400: {
+        type: 'object',
+        properties: {
+          error: { type: 'string' }
+        }
+      }
+    }
+  }
+}, verifyEmailHandler);
 }
 
 

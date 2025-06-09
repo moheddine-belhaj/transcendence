@@ -11,6 +11,7 @@ const userCore =({
     })
     .email(),
     name: z.string(),
+    verificationToken: z.string().optional(),
 
 });
 
@@ -21,7 +22,7 @@ const createUserSchema =  z.object({
         required_error: 'Password is required',
         invalid_type_error: 'Password must be a string',
     }),
-
+    
 });
 
 const createUserResponseSchema = z.object({
@@ -30,6 +31,7 @@ const createUserResponseSchema = z.object({
         invalid_type_error: 'ID must be a number',
     }),
     ...userCore,
+    isVerified: z.boolean(),
 });
 
 export type CreateUserInput = z.infer<typeof createUserSchema>;
@@ -41,7 +43,17 @@ export type DeleteFriendInput = z.infer<typeof deleteFriendSchema>;
 export type UpdateUserInput = z.infer<typeof updateUserSchema>;
 export type UpdateUserResponse = z.infer<typeof updateUserResponseSchema>;
 
+export const verifyEmailSchema = z.object({
+  token: z.string()
+});
 
+export const verifyEmailResponseSchema = z.object({
+  message: z.string()
+});
+
+export const verifyEmailErrorSchema = z.object({
+  error: z.string()
+});
 // match schemas
 export type CreateMatchInput = z.infer<typeof createMatchSchema>;
 export type UpdateMatchInput = z.infer<typeof updateMatchSchema>;
@@ -151,7 +163,10 @@ export const {schemas:userSchema, $ref} = buildJsonSchemas({
     friendResponseSchema,
     updateUserSchema,
     updateUserResponseSchema,
-    acceptFriendSchema
+    acceptFriendSchema,
+    verifyEmailSchema,
+    verifyEmailResponseSchema,
+    verifyEmailErrorSchema
 });
 
 export const { schemas: matchSchemas, $ref: matchRef } = buildJsonSchemas({
