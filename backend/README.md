@@ -39,8 +39,7 @@ BASE_URL=http://localhost: # frontend
 
 3. Create an **App Password**  
    - After enabling 2FA, search for "App Passwords" in the security page  
-   - Select "Mail" as the app type  
-   - Choose "Other (Custom Name)" and enter your app name (e.g., "Node Mailer")  
+   - Enter your app name (e.g., "Transendence")  
    - Click "Generate"  
 
 4. Copy the generated 16-character password  
@@ -50,6 +49,10 @@ BASE_URL=http://localhost: # frontend
   GMAIL_USER=your.email@gmail.com
   GMAIL_PASSWORD=your-generated-app-password
   ```
+</br>
+
+- Start the server
+
 ```sh
 npm run dev
 ```
