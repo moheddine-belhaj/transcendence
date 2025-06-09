@@ -7,51 +7,55 @@
 generator client {
   provider = "prisma-client-js"
 }
+
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id          Int       @id @default(autoincrement())
-  name        String    @unique
-  password    String
-  email       String    @unique
-  salt        String
-  avatar      String?   @default("default-avatar.png") 
-  twoFAsecret String?   @map("2FA secret")
-  friends     Friend[]  @relation("UserAsFriend")
-  friendOf    Friend[]  @relation("FriendOfUser")
-  oauth       OAuth2_0[]
-  matchesAsPlayer1 Match[] @relation("Player1Matches")
-  matchesAsPlayer2 Match[] @relation("Player2Matches")
-  wonMatches  Match[]   @relation("WinnerMatches")  // Add this line
+  id                       Int        @id @default(autoincrement())
+  name                     String     @unique
+  password                 String
+  email                    String     @unique
+  salt                     String
+  avatar                   String?    @default("default-avatar.png")
+  twoFAsecret              String?    @map("2FA secret")
+  friends                  Friend[]   @relation("UserAsFriend")
+  friendOf                 Friend[]   @relation("FriendOfUser")
+  oauth                    OAuth2_0[]
+  matchesAsPlayer1         Match[]    @relation("Player1Matches")
+  matchesAsPlayer2         Match[]    @relation("Player2Matches")
+  wonMatches               Match[]    @relation("WinnerMatches") // Add this line
+  isVerified               Boolean    @default(false)
+  verificationToken        String?    @unique
+  verificationTokenExpires DateTime?
 
   @@map("User")
 }
 
 model Match {
-  id          Int      @id @default(autoincrement())
-  player1Id   Int
-  player2Id   Int
-  player1     User     @relation("Player1Matches", fields: [player1Id], references: [id])
-  player2     User     @relation("Player2Matches", fields: [player2Id], references: [id])
+  id           Int      @id @default(autoincrement())
+  player1Id    Int
+  player2Id    Int
+  player1      User     @relation("Player1Matches", fields: [player1Id], references: [id])
+  player2      User     @relation("Player2Matches", fields: [player2Id], references: [id])
   scorePlayer1 Int
   scorePlayer2 Int
-  winnerId    Int?
-  winner      User?    @relation("WinnerMatches", fields: [winnerId], references: [id])  // Add relation name
-  matchDate   DateTime @default(now())
-  status      String   @default("completed") // or "pending", "cancelled"
+  winnerId     Int?
+  winner       User?    @relation("WinnerMatches", fields: [winnerId], references: [id]) // Add relation name
+  matchDate    DateTime @default(now())
+  status       String   @default("completed") // or "pending", "cancelled"
 
   @@map("Match")
 }
+
 model Friend {
-  user_user_ind   Int     @map("user/user_ind")
-  friend_user_ind Int     @map("friend/user_ind")
+  user_user_ind   Int    @map("user/user_ind")
+  friend_user_ind Int    @map("friend/user_ind")
   status          String
-  user            User    @relation("FriendOfUser", fields: [user_user_ind], references: [id])
-  friendUser      User    @relation("UserAsFriend", fields: [friend_user_ind], references: [id])
+  user            User   @relation("FriendOfUser", fields: [user_user_ind], references: [id])
+  friendUser      User   @relation("UserAsFriend", fields: [friend_user_ind], references: [id])
 
   @@id([user_user_ind, friend_user_ind])
   @@map("Friend")
@@ -60,7 +64,7 @@ model Friend {
 model OAuth2_0 {
   user_id      Int
   service_type String
-  user         User    @relation(fields: [user_id], references: [id])
+  user         User   @relation(fields: [user_id], references: [id])
 
   @@id([user_id, service_type])
   @@map("OAuth 2.0")

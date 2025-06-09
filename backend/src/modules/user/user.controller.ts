@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { addFriend, createUser, deleteFriend, findUserByEmail, findUsers, getUserFriendsList, updateFriendStatus, updateUser } from "./user.service";
+import { addFriend, createUser, deleteFriend, findUserByEmail, findUsers, getUserFriendsList, updateFriendStatus, updateUser, verifyUserEmail } from "./user.service";
 import { CreateUserInput, LoginInput ,AddFriendInput, UpdateUserInput} from "./user.schema";
 import { access } from "fs";
 import { server } from "../../app";
@@ -30,38 +30,62 @@ export async function registerUserHandler(
 
 }
 
-export async function loginHandler(
-    request: FastifyRequest<{Body:LoginInput}>,
-    reply: FastifyReply
+export async function verifyEmailHandler(
+  request: FastifyRequest<{ Querystring: { token: string } }>,
+  reply: FastifyReply
 ) {
-
-    const body = request.body;
-
-    const user = await findUserByEmail(body.email);
-
-    if (!user) {
-        return reply.code(401).send({ error: "Invalid email or password" });
+  try {
+    const { token } = request.query;
+    
+    if (!token) {
+      return reply.code(400).send({ error: 'Verification token is required' });
     }
-// verify the password
-    const correctPassword = verifyPassword({
-        condidatepassword: body.password,
-        hash: user.password,
-        salt: user.salt,
-    });
-    if (correctPassword) {
-        const { password, salt, ...userWithoutPassword } = user;
-        const token = server.jwt.sign(userWithoutPassword);
-      
-        return reply
-          .code(200)
-          .send({ access_token: token, user: {
-            id: user.id,
-            email: user.email,
-            name: user.name
-          }});
-      } 
 
+    await verifyUserEmail(token);
+    return reply.code(200).send({ message: 'Email verified successfully' });
+  } catch (error) {
+    request.log.error(error);
+    const errorMessage = error instanceof Error ? error.message : 'Verification failed';
+    return reply.code(400).send({ error: errorMessage });
+  }
+}
+
+export async function loginHandler(
+  request: FastifyRequest<{Body:LoginInput}>,
+  reply: FastifyReply
+) {
+  const body = request.body;
+  const user = await findUserByEmail(body.email);
+
+  if (!user) {
     return reply.code(401).send({ error: "Invalid email or password" });
+  }
+
+  // Check if user is verified
+  if (!user.isVerified) {
+    return reply.code(403).send({ error: "Please verify your email address first" });
+  }
+
+// verify the password
+const correctPassword = verifyPassword({
+    condidatepassword: body.password,
+    hash: user.password,
+    salt: user.salt,
+});
+if (correctPassword) {
+    const { password, salt, ...userWithoutPassword } = user;
+    const token = server.jwt.sign(userWithoutPassword);
+  
+    return reply
+      .code(200)
+      .send({ access_token: token, user: {
+        id: user.id,
+        email: user.email,
+        name: user.name
+      }});
+  } 
+
+return reply.code(401).send({ error: "Invalid email or password" });
 
 
 }

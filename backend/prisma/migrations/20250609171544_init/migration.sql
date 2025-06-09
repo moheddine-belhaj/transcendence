@@ -6,7 +6,10 @@ CREATE TABLE "User" (
     "email" TEXT NOT NULL,
     "salt" TEXT NOT NULL,
     "avatar" TEXT DEFAULT 'default-avatar.png',
-    "2FA secret" TEXT
+    "2FA secret" TEXT,
+    "isVerified" BOOLEAN NOT NULL DEFAULT false,
+    "verificationToken" TEXT,
+    "verificationTokenExpires" DATETIME
 );
 
 -- CreateTable
@@ -49,3 +52,6 @@ CREATE UNIQUE INDEX "User_name_key" ON "User"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_verificationToken_key" ON "User"("verificationToken");
