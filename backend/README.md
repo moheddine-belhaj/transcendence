@@ -27,14 +27,29 @@ EMAIL_FROM="Your App Name <Transcendence <noreply@transcendence.com>>"
 BASE_URL=http://localhost: # frontend
 ```
 
-> to run the Email Verification:
-</br>
-> 1- go to https://myaccount.google.com/ then activate 2-step Verification 
-</br>
-> 2- Search for App Passwords in the same page
-</br>
-> 3- Create an app then save the password and use it for EMAIL_PASSWORD
+### To set up Email Verification:
 
+1. Go to [Google Account Security](https://myaccount.google.com/)  
+   - Sign in if needed
+   - Navigate to "Security" tab
+
+2. Enable **2-Step Verification**  
+   - Under "Signing in to Google", click "2-Step Verification"  
+   - Follow the prompts to set it up
+
+3. Create an **App Password**  
+   - After enabling 2FA, search for "App Passwords" in the security page  
+   - Select "Mail" as the app type  
+   - Choose "Other (Custom Name)" and enter your app name (e.g., "Node Mailer")  
+   - Click "Generate"  
+
+4. Copy the generated 16-character password  
+   - Use this as your `EMAIL_PASSWORD` in `.env`  
+   - Example:  
+  ```
+  GMAIL_USER=your.email@gmail.com
+  GMAIL_PASSWORD=your-generated-app-password
+  ```
 ```sh
 npm run dev
 ```
