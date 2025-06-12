@@ -4,6 +4,7 @@ import { LoginPage } from './pages/login/LoginPage';
 import { NotFoundPage } from './pages/not-found/NotFoundPage';
 import { RegisterPage } from './pages/RegisterPage/RegisterPage';
 import { UserSettingsPage } from './pages/settings/SettingsPage';
+import { GamePage } from './pages/game/GamePage';
 
 export const appRoutes = {
   '/':{ 
@@ -24,6 +25,10 @@ export const appRoutes = {
     },
   '/settings': {
     page: UserSettingsPage,
+    requiresAuth: true
+  },
+  '/game': {
+    page: GamePage,
     requiresAuth: true
   },
   '*':{ 
