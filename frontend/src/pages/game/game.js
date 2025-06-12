@@ -1,53 +1,41 @@
-import { BasePage } from '../../core/BasePage';
-import template from './game-page.html';
-
-declare const BABYLON: any;
-
-declare global {
-    interface Window {
-        BABYLON: any;
-    }
-}
-
 class PingPongGame {
-    private canvas: HTMLCanvasElement;
-    private engine: any;
-    private scene: any;
-    private camera: any;
-    
-    // Game objects
-    private paddle1: any;
-    private paddle2: any;
-    private ball: any;
-    private boundaries: any[] = [];
-    
-    // Game state
-    private gameStarted: boolean = false;
-    private gameEnded: boolean = false;
-    private score1: number = 0;
-    private score2: number = 0;
-    private winningScore: number = 2;
-    
-    // Game settings
-    private gameWidth: number = 20;
-    private gameHeight: number = 12;
-    private paddleSpeed: number = 0.2;
-    private ballSpeed: number = 0.15;
-    private paddleHeight: number = 3;
-    private paddleWidth: number = 0.5;
-    
-    // Ball movement
-    private ballVelocity = { x: 0, y: 0 };
-    
-    // Input handling
-    private keys: { [key: string]: boolean } = {};
-
-    constructor(canvasId: string) {
-        this.canvas = document.getElementById(canvasId) as HTMLCanvasElement;
+    constructor() {
+        this.canvas = document.getElementById('renderCanvas');
+        this.engine = null;
+        this.scene = null;
+        this.camera = null;
+        
+        // Game objects
+        this.paddle1 = null;
+        this.paddle2 = null;
+        this.ball = null;
+        this.boundaries = [];
+        
+        // Game state
+        this.gameStarted = false;
+        this.gameEnded = false;
+        this.score1 = 0;
+        this.score2 = 0;
+        this.winningScore = 10;
+        
+        // Game settings
+        this.gameWidth = 20;
+        this.gameHeight = 12;
+        this.paddleSpeed = 0.2;
+        this.ballSpeed = 0.15;
+        this.paddleHeight = 3;
+        this.paddleWidth = 0.5;
+        
+        // Ball movement
+        this.ballVelocity = { x: 0, y: 0 };
+        
+        // Input handling
+        this.keys = {};
+        
         this.init();
     }
     
-    private async init() {
+    async init() {
         // Create engine and scene
         this.engine = new BABYLON.Engine(this.canvas, true);
         this.scene = new BABYLON.Scene(this.engine);
@@ -87,7 +75,7 @@ class PingPongGame {
         console.log('Ping Pong Game initialized! Press SPACE to start.');
     }
     
-    private createGameObjects() {
+    createGameObjects() {
         // Create 3D paddles with rounded edges
         const paddleGeometry = BABYLON.MeshBuilder.CreateBox('paddle', {
             width: this.paddleWidth,
@@ -95,19 +83,19 @@ class PingPongGame {
             depth: 1.0
         }, this.scene);
         
-        // Add some bevel/rounding to paddles
+        // // Add some bevel/rounding to paddles
         paddleGeometry.enableEdgesRendering();
         paddleGeometry.edgesWidth = 2.0;
         paddleGeometry.edgesColor = new BABYLON.Color4(0, 0, 0, 1);
         
-        // Paddle 1 (left) - 3D with depth
+        // // Paddle 1 (left) - 3D with depth
         this.paddle1 = paddleGeometry.clone('paddle1');
         this.paddle1.position.x = -this.gameWidth / 2 + 1;
         this.paddle1.position.y = 0;
         this.paddle1.position.z = 0;
         this.paddle1.material = this.create3DMaterial('#00ff00', '#004400'); // Green with darker edges
         
-        // Paddle 2 (right) - 3D with depth
+        // // Paddle 2 (right) - 3D with depth
         this.paddle2 = paddleGeometry.clone('paddle2');
         this.paddle2.position.x = this.gameWidth / 2 - 1;
         this.paddle2.position.y = 0;
@@ -160,7 +148,14 @@ class PingPongGame {
         centerLine.material = this.create3DMaterial('#666666', '#333333');
     }
     
-    private create3DMaterial(color: string, specularColor?: string) {
+    createMaterial(color) {
+        const material = new BABYLON.StandardMaterial('material', this.scene);
+        material.diffuseColor = BABYLON.Color3.FromHexString(color);
+        material.emissiveColor = BABYLON.Color3.FromHexString(color).scale(0.3);
+        return material;
+    }
+    
+    create3DMaterial(color, specularColor) {
         const material = new BABYLON.StandardMaterial('3dmaterial', this.scene);
         material.diffuseColor = BABYLON.Color3.FromHexString(color);
         material.specularColor = BABYLON.Color3.FromHexString(specularColor || '#ffffff');
@@ -174,7 +169,7 @@ class PingPongGame {
         return material;
     }
     
-    private setupInput() {
+    setupInput() {
         // Keyboard input
         document.addEventListener('keydown', (event) => {
             this.keys[event.code] = true;
@@ -191,7 +186,7 @@ class PingPongGame {
         });
     }
     
-    private startGame() {
+    startGame() {
         this.gameStarted = true;
         this.gameEnded = false;
         
@@ -219,7 +214,7 @@ class PingPongGame {
         console.log('Game started!');
     }
     
-    private updateGame() {
+    updateGame() {
         if (!this.gameEnded) {
             this.handleInput();
             this.updateBall();
@@ -228,7 +223,7 @@ class PingPongGame {
         this.update3DEffects();
     }
     
-    private update3DEffects() {
+    update3DEffects() {
         // Rotate the ball for visual effect
         this.ball.rotation.x += 0.1;
         this.ball.rotation.y += 0.05;
@@ -261,7 +256,7 @@ class PingPongGame {
         }
     }
     
-    private handleInput() {
+    handleInput() {
         // Player 1 (Arrow keys)
         if (this.keys['ArrowUp'] && this.paddle1.position.y < this.gameHeight / 2 - this.paddleHeight / 2) {
             this.paddle1.position.y += this.paddleSpeed;
@@ -279,12 +274,12 @@ class PingPongGame {
         }
     }
     
-    private updateBall() {
+    updateBall() {
         this.ball.position.x += this.ballVelocity.x;
         this.ball.position.y += this.ballVelocity.y;
     }
     
-    private checkCollisions() {
+    checkCollisions() {
         // Ball collision with top/bottom boundaries
         if (this.ball.position.y >= this.gameHeight / 2 - 0.25 || 
             this.ball.position.y <= -this.gameHeight / 2 + 0.25) {
@@ -307,7 +302,7 @@ class PingPongGame {
         }
     }
     
-    private checkPaddleCollision(paddle: any) {
+    checkPaddleCollision(paddle) {
         const ballX = this.ball.position.x;
         const ballY = this.ball.position.y;
         const paddleX = paddle.position.x;
@@ -339,7 +334,7 @@ class PingPongGame {
         }
     }
     
-    private resetBall() {
+    resetBall() {
         // Immediately reset ball to center
         this.ball.position.x = 0;
         this.ball.position.y = 0;
@@ -352,11 +347,9 @@ class PingPongGame {
         this.ballVelocity.y = this.ballSpeed * Math.sin(angle);
     }
     
-    private updateScore() {
-        const score1Element = document.getElementById('score1');
-        const score2Element = document.getElementById('score2');
-        if (score1Element) score1Element.textContent = this.score1.toString();
-        if (score2Element) score2Element.textContent = this.score2.toString();
+    updateScore() {
+        document.getElementById('score1').textContent = this.score1;
+        document.getElementById('score2').textContent = this.score2;
         
         // Check for win condition
         if (this.score1 >= this.winningScore || this.score2 >= this.winningScore) {
@@ -364,7 +357,7 @@ class PingPongGame {
         }
     }
     
-    private endGame() {
+    endGame() {
         this.gameEnded = true;
         this.gameStarted = false;
         
@@ -376,7 +369,7 @@ class PingPongGame {
         this.showWinningScreen(winner, winnerColor);
     }
     
-    private showWinningScreen(winner: string, color: string) {
+    showWinningScreen(winner, color) {
         // Create or update winning screen
         let winScreen = document.getElementById('winScreen');
         if (!winScreen) {
@@ -416,69 +409,15 @@ class PingPongGame {
         winScreen.style.display = 'block';
     }
     
-    private hideWinningScreen() {
+    hideWinningScreen() {
         const winScreen = document.getElementById('winScreen');
         if (winScreen) {
             winScreen.style.display = 'none';
         }
     }
-
-    public destroy() {
-        if (this.engine) {
-            this.engine.dispose();
-        }
-    }
 }
 
-export class GamePage extends BasePage {
-    private game: PingPongGame | null = null;
-
-    protected async loadTemplate(): Promise<string> {
-        return template;
-    }
-
-    protected initEventListeners(): void {
-        // Event listeners will be set up by the game itself
-    }
-
-    async mount(): Promise<HTMLElement> {
-        const element = await super.mount();
-        
-        // Load Babylon.js if not already loaded
-        await this.loadBabylonJS();
-        
-        // Initialize the game after a short delay to ensure DOM is ready
-        setTimeout(() => {
-            this.game = new PingPongGame('renderCanvas');
-        }, 100);
-        
-        return element;
-    }
-
-    private async loadBabylonJS(): Promise<void> {
-        return new Promise((resolve, reject) => {
-            // Check if Babylon.js is already loaded
-            if (window.BABYLON) {
-                resolve();
-                return;
-            }
-
-            // Create script element
-            const script = document.createElement('script');
-            script.src = 'https://cdn.babylonjs.com/babylon.js';
-            script.onload = () => resolve();
-            script.onerror = () => reject(new Error('Failed to load Babylon.js'));
-            
-            // Add to head
-            document.head.appendChild(script);
-        });
-    }
-
-    destroy(): void {
-        if (this.game) {
-            this.game.destroy();
-            this.game = null;
-        }
-        super.destroy();
-    }
-}
+// Initialize the game when the page loads
+window.addEventListener('DOMContentLoaded', () => {
+    new PingPongGame();
+}); 
