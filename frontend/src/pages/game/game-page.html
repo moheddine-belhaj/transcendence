@@ -9,8 +9,24 @@
             margin: 0;
             padding: 0;
             overflow: hidden;
-            background: #000;
+            background: #1f1d1d;
             font-family: Arial, sans-serif;
+        }
+        
+        #navbar-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+        
+        #gameContainer {
+            position: absolute;
+            top: 64px; /* Account for navbar height */
+            left: 0;
+            right: 0;
+            bottom: 0;
         }
         
         #renderCanvas {
@@ -47,16 +63,22 @@
     </style>
 </head>
 <body>
-    <canvas id="renderCanvas"></canvas>
+    <!-- Navbar container -->
+    <div id="navbar-container"></div>
     
-    <div id="gameUI">
-        <span class="score">Player 1: <span id="score1">0</span></span>
-        <span class="score">Player 2: <span id="score2">0</span></span>
-    </div>
-    
-    <div id="instructions">
-        <p>Player 1: Use Arrow Keys (Up/Down) | Player 2: Use W/S Keys</p>
-        <p>Press SPACE to start/restart the game</p>
+    <!-- Game container -->
+    <div id="gameContainer">
+        <canvas id="renderCanvas"></canvas>
+        
+        <div id="gameUI">
+            <span class="score">Player 1: <span id="score1">0</span></span>
+            <span class="score">Player 2: <span id="score2">0</span></span>
+        </div>
+        
+        <div id="instructions">
+            <p>Player 1: Use Arrow Keys (Up/Down) | Player 2: Use W/S Keys</p>
+            <p>Press SPACE to start/restart the game</p>
+        </div>
     </div>
 
     <!-- Babylon.js CDN -->

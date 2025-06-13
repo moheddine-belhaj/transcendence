@@ -1,4 +1,5 @@
 import { BasePage } from '../../core/BasePage';
+import { Navbar } from '../../components/Navbar';
 import template from './game-page.html';
 
 declare const BABYLON: any;
@@ -432,6 +433,7 @@ class PingPongGame {
 
 export class GamePage extends BasePage {
     private game: PingPongGame | null = null;
+    private navbar: Navbar | null = null;
 
     protected async loadTemplate(): Promise<string> {
         return template;
@@ -443,6 +445,39 @@ export class GamePage extends BasePage {
 
     async mount(): Promise<HTMLElement> {
         const element = await super.mount();
+        
+        // Create and mount navbar
+        this.navbar = new Navbar({
+            username: 'Player', // You might want to get this from a user service/state
+            userInitials: 'P',   // You might want to get this from a user service/state
+            email: 'player@example.com', // You might want to get this from a user service/state
+            onNewGame: () => {
+                console.log('New game clicked');
+                // Handle new game logic
+            }
+        });
+        
+        // Find the navbar container and mount the navbar
+        const navbarContainer = element.querySelector('#navbar-container');
+        if (navbarContainer) {
+            const navbarElement = await this.navbar.mount();
+            navbarContainer.appendChild(navbarElement);
+            
+            // Add event listeners for navbar events
+            navbarElement.addEventListener('logout', () => {
+                console.log('Logout requested from game page');
+                // Handle logout - you might want to emit this up to the router
+                // this.emit('logout'); // Uncomment if you want to bubble this up
+            });
+            
+            navbarElement.addEventListener('new-game', () => {
+                console.log('New game requested');
+                // Handle new game - restart the current game
+                if (this.game) {
+                    // You could add a restart method to the game if needed
+                }
+            });
+        }
         
         // Load Babylon.js if not already loaded
         await this.loadBabylonJS();
@@ -478,6 +513,10 @@ export class GamePage extends BasePage {
         if (this.game) {
             this.game.destroy();
             this.game = null;
+        }
+        if (this.navbar) {
+            this.navbar.destroy();
+            this.navbar = null;
         }
         super.destroy();
     }
