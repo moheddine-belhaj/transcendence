@@ -239,3 +239,12 @@ npm run dev
 - http://localhost:5173
 
 
+### GAME
+
+```sh
+docker system prune -a
+docker builder prune -a
+docker-compose build --no-cache
+docker-compose up
+
+```
