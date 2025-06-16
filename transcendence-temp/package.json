@@ -1,0 +1,21 @@
+{
+  "name": "babylonjs-pong-game",
+  "version": "1.0.0",
+  "description": "2D Ping Pong game built with Babylon.js and Socket.IO",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
+    "server:dev": "cd server && npm run dev",
+    "client:dev": "cd client && npm run dev",
+    "build": "cd client && npm run build",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up",
+    "docker:down": "docker-compose down"
+  },
+  "keywords": ["babylon.js", "ping-pong", "websocket", "game"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+} 
