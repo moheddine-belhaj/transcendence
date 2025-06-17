@@ -1,5 +1,4 @@
 import { GamePage } from './components/GamePage';
-import { BasePage } from './core/BasePage';
 import { DashBoardPage } from './pages/dashboard/DashboardPage';
 import { LoginPage } from './pages/login/LoginPage';
 import { NotFoundPage } from './pages/not-found/NotFoundPage';

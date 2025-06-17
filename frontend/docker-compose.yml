@@ -1,19 +1,19 @@
+version: '3.8'
 
 services:
   frontend:
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: Dockerfile  # Use the dev Dockerfile
     ports:
-      - "80:80"
+      - "5173:5173"  # Map host 5173 → container 5173
     volumes:
-      - ./frontend:/app
-      - /app/node_modules
+      - .:/app  # Live code reload (bind mount)
+      - /app/node_modules  # Prevent overwriting node_modules
     environment:
       - NODE_ENV=development
     networks:
       - app-network
-    restart: unless-stopped
 
 networks:
   app-network:

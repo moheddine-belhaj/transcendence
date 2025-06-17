@@ -3,7 +3,7 @@ import template from './dashboard-page.html'
 import { Navbar } from '../../components/Navbar';
 import { getCurrentUser, logout} from '../../utils/auth';
 import { WelcomeBanner } from '../../components/WelcomeBanner';
-import { FriendsList, FriendsListProps } from '../../components/FriendsList';
+import { FriendsList } from '../../components/FriendsList';
 import { GameHistory } from '../../components/GameHistory';
 import { PongGame } from '../../game/PongGame';
 
@@ -144,32 +144,32 @@ private handleNewGame(): void {
   }
 }
 
-const fakeFriendsList: FriendsListProps = {
-  friends: [
-    {
-      userId: "1a2b3c4d",
-      username: "johndoe123",
-      isOnline: true
-    },
-    {
-      userId: "5e6f7g8h",
-      username: "janedoe456",
-      isOnline: false
-    },
-    {
-      userId: "9i0j1k2l",
-      username: "alexsmith",
-      isOnline: true
-    },
-    {
-      userId: "3m4n5o6p",
-      username: "sarahmiller",
-      isOnline: false
-    },
-    {
-      userId: "7q8r9s0t",
-      username: "mikejones",
-      isOnline: true
-    }
-  ]
-};
+// const fakeFriendsList: FriendsListProps = {
+//   friends: [
+//     {
+//       userId: "1a2b3c4d",
+//       username: "johndoe123",
+//       isOnline: true
+//     },
+//     {
+//       userId: "5e6f7g8h",
+//       username: "janedoe456",
+//       isOnline: false
+//     },
+//     {
+//       userId: "9i0j1k2l",
+//       username: "alexsmith",
+//       isOnline: true
+//     },
+//     {
+//       userId: "3m4n5o6p",
+//       username: "sarahmiller",
+//       isOnline: false
+//     },
+//     {
+//       userId: "7q8r9s0t",
+//       username: "mikejones",
+//       isOnline: true
+//     }
+//   ]
+// };

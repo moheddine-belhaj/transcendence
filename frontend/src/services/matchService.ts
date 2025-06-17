@@ -1,5 +1,4 @@
 import { API_BASE_URL } from '../routes';
-import { getCurrentUser } from '../utils/auth';
 
 export const MatchService = {
     async createMatch(player1Id: number, player2Id: number) {

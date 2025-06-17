@@ -2,7 +2,6 @@ import { Engine, Scene, ArcRotateCamera, Vector3, HemisphericLight, MeshBuilder,
 import { AdvancedDynamicTexture, TextBlock } from '@babylonjs/gui';
 
 import { MatchService } from '../services/matchService';
-import { getCurrentUser } from '../utils/auth';
 
 export class PongGame {
     private canvas: HTMLCanvasElement;
