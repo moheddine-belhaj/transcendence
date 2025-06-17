@@ -1,5 +1,5 @@
 import { BaseComponent } from '../core/BaseComponent';
-import { DropdownSearch } from './DropdownSearch';
+
 
 export type FriendsListProps = {
   friends:Friend[]
