@@ -19,7 +19,7 @@ async function matchRoutes(server: FastifyInstance) {
     preHandler: [server.authenticate]
   }, createMatchHandler);
 
-  server.patch<{
+  server.put<{
     Params: { matchId: string };
     Body: { scorePlayer1: number; scorePlayer2: number; winnerId?: number };
   }>("/:matchId/result", {
