@@ -36,8 +36,7 @@ export class FriendsList extends BaseComponent<FriendsListProps> {
                                     <p class="font-medium">${f.username}</p>
                                     <p class="text-sm text-gray-500">${f.isOnline ? 'Online now':'Offline'}</p>
                                 </div>
-                            </div>
-                            <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                            </div>                            <button class="text-blue-600 hover:text-blue-800 text-sm font-medium challenge-btn" data-friend-id="${f.userId}" data-friend-name="${f.username}">
                                 Challenge
                             </button>
                         </div>` )
@@ -60,8 +59,26 @@ export class FriendsList extends BaseComponent<FriendsListProps> {
             </div>
         `;
   }
-
   protected setupEventListeners(): void {
-
+    // Add event listeners to all challenge buttons
+    const challengeButtons = this.element.querySelectorAll('.challenge-btn');
+    challengeButtons.forEach(button => {
+      button.addEventListener('click', (e) => {
+        const target = e.target as HTMLButtonElement;
+        const friendId = target.getAttribute('data-friend-id');
+        const friendName = target.getAttribute('data-friend-name');
+        
+        if (friendId && friendName) {
+          // Emit custom event to start game
+          const challengeEvent = new CustomEvent('friend-challenge', {
+            detail: {
+              friendId: parseInt(friendId),
+              friendName: friendName
+            }
+          });
+          this.element.dispatchEvent(challengeEvent);
+        }
+      });
+    });
   }
 }

@@ -11,7 +11,8 @@ type Form = {
     username:string;
     email:string;
     avatar:string;
-    password?:string;
+    currentPassword?:string;
+    newPassword?:string;
 }
 
 export class UserSettingsForm extends BaseComponent<UserSettingsFormProps> {
@@ -28,16 +29,9 @@ private confirmPassword:string="";
                 <!-- Avatar Upload -->
                 <div class="flex flex-col items-center">
                     <div class="relative mb-4">
-                        <img id="avatar-preview" src="${this.props.avatar}" class="h-24 w-24 rounded-full object-cover border-4 border-blue-100">
-                        <label for="avatar-upload" class="absolute bottom-0 right-0 bg-blue-500 text-white p-1 rounded-full cursor-pointer hover:bg-blue-600">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                        </label>
-                        <input type="file" id="avatar-upload" class="hidden" accept="image/*">
+                        
                     </div>
-                    <p class="text-sm text-gray-500">Click the icon to change your avatar</p>
+                   
                 </div>
 
                 <!-- Name -->
@@ -61,7 +55,18 @@ private confirmPassword:string="";
                         value="${this.props.email}" 
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
                         required
+                    >                </div>
+
+                <!-- Current Password -->
+                <div>
+                    <label for="current-password" class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+                    <input 
+                        type="password" 
+                        id="current-password" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                        placeholder="Required to change password"
                     >
+                    <p class="mt-1 text-xs text-gray-500">Required if changing password</p>
                 </div>
 
                 <!-- Password -->
@@ -101,20 +106,18 @@ private confirmPassword:string="";
                 </div>
             </form>
         `;
-  }
-
-  protected setupEventListeners(): void {
+  }  protected setupEventListeners(): void {
     this.element.querySelector("#name")?.addEventListener("change", (e)=>{
         this.form.username = (e.target as HTMLInputElement).value
     })
     this.element.querySelector("#email")?.addEventListener("change", (e)=>{
         this.form.email = (e.target as HTMLInputElement).value
     })
-    this.element.querySelector("#avatar-upload")?.addEventListener("change", (e)=>{
-        this.form.avatar = (e.target as HTMLInputElement).value
+    this.element.querySelector("#current-password")?.addEventListener("change", (e)=>{
+        this.form.currentPassword = (e.target as HTMLInputElement).value
     })
     this.element.querySelector("#password")?.addEventListener("change", (e)=>{
-        this.form.password = (e.target as HTMLInputElement).value
+        this.form.newPassword = (e.target as HTMLInputElement).value
     })
     this.element.querySelector("#confirm-password")?.addEventListener("change", (e)=>{
         this.confirmPassword = (e.target as HTMLInputElement).value
@@ -122,7 +125,29 @@ private confirmPassword:string="";
     })
     this.element.querySelector("form")?.addEventListener("submit", (e)=>{
         e.preventDefault()
-        console.log(this.form)
+        
+        // Validate passwords match if new password is being set
+        if (this.form.newPassword && this.form.newPassword !== this.confirmPassword) {
+            alert('New passwords do not match');
+            return;
+        }
+        
+        // Validate current password is provided if trying to change password
+        if (this.form.newPassword && !this.form.currentPassword) {
+            alert('Current password is required to set a new password');
+            return;
+        }
+        
+        // Emit custom event with form data
+        const updateEvent = new CustomEvent('user-update', {
+            detail: {
+                name: this.form.username,
+                email: this.form.email,
+                currentPassword: this.form.currentPassword || undefined,
+                newPassword: this.form.newPassword || undefined
+            }
+        });
+        this.element.dispatchEvent(updateEvent);
     })
   }
 }

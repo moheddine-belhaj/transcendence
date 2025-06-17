@@ -6,7 +6,6 @@ import { WelcomeBanner } from '../../components/WelcomeBanner';
 import { FriendsList } from '../../components/FriendsList';
 import { GameHistory } from '../../components/GameHistory';
 import { DropdownSearch } from '../../components/DropdownSearch';
-import { PongGame } from '../../game/PongGame';
 import { UserService } from '../../api/users';
 import { MatchService } from '../../services/matchService';
 
@@ -41,58 +40,10 @@ export class DashBoardPage extends BasePage {
   }
   
 private handleNewGame(): void {
-        const user = getCurrentUser();
-        if (!user) return;
-        
-        // For demo purposes, we'll use the current user as player1
-        // and a fake opponent as player2. In a real app, you'd match players.
-        const player1Id = user.id;
-        const player2Id = 2; // This would come from matchmaking
-        
-        // Create game container
-        const gameContainer = document.createElement('div');
-        gameContainer.id = 'pong-game-container';
-        gameContainer.style.position = 'fixed';
-        gameContainer.style.top = '0';
-        gameContainer.style.left = '0';
-        gameContainer.style.width = '100vw';
-        gameContainer.style.height = '100vh';
-        gameContainer.style.zIndex = '1000';
-        gameContainer.style.backgroundColor = 'black';
-        
-        // Add game HTML
-        gameContainer.innerHTML = `
-            <div id="gameContainer">
-                <canvas id="renderCanvas"></canvas>
-                
-                <div id="ui">
-                    <div id="playerInfo">Player ${user.name} vs Opponent</div>
-                    <div id="score">Score: 0 - 0</div>
-                    <div id="gameStatus">Game started!</div>
-                </div>
-                
-                <div id="gameMessage" class="game-message" style="display: none;">
-                    <div id="messageText"></div>
-                    <button id="restartBtn" style="display: none;">Restart Game</button>
-                    <button id="exitBtn">Exit to Dashboard</button>
-                </div>
-            </div>
-        `;
-        
-        document.body.appendChild(gameContainer);
-        
-        // Initialize game
-        new PongGame(player1Id, player2Id);
-          // Handle exit button
-        const exitBtn = gameContainer.querySelector('#exitBtn');
-        if (exitBtn) {
-            exitBtn.addEventListener('click', async () => {
-                document.body.removeChild(gameContainer);
-                // Refresh game history to show the new match
-                await this.displayGameHistory();
-            });
-        }
-    }
+    // Games are now only started through the Challenge button in the friends list
+    // This method is kept for compatibility but doesn't create games anymore
+    console.log('Use the Challenge button in the friends list to start a game');
+}
   protected initEventListeners(): void {
   }    async mount(): Promise<HTMLElement> {
     const element = await super.mount();
@@ -102,8 +53,6 @@ private handleNewGame(): void {
     await this.displayGameHistory()
     return element;
   }
-
-  // Removed duplicate handleNewGame method to fix duplicate implementation error
 
   private displayNavbar(){
      // Mount navbar
@@ -151,10 +100,16 @@ private handleNewGame(): void {
       console.error('Failed to load friends:', error);
       // Keep the existing empty friendsList if loading fails
     }
-    
-    const friendsList = this.container.querySelector('#friends-list-container');
+      const friendsList = this.container.querySelector('#friends-list-container');
     if (friendsList) {
-      friendsList.appendChild(this.friendsList.mount());
+      const friendsListElement = this.friendsList.mount();
+      friendsList.appendChild(friendsListElement);
+      
+      // Listen for friend challenge events
+      friendsListElement.addEventListener('friend-challenge', (e: Event) => {
+        const customEvent = e as CustomEvent;
+        this.handleFriendChallenge(customEvent.detail.friendId, customEvent.detail.friendName);
+      });
     }
     const dropdown = this.container.querySelector('#add-friends-dropdown');
     if (dropdown) {
@@ -195,5 +150,13 @@ private handleNewGame(): void {
     if (gameHistory) {
       gameHistory.appendChild(this.gameHistory.mount());
     }
+  }
+  private handleFriendChallenge(friendId: number, friendName: string): void {
+    const user = getCurrentUser();
+    if (!user) return;
+    
+    // Navigate to game route with player IDs as URL parameters
+    const gameUrl = `/game?player1=${user.id}&player2=${friendId}&player1Name=${encodeURIComponent(user.name)}&player2Name=${encodeURIComponent(friendName)}`;
+    this.navigateTo(gameUrl);
   }
 }
