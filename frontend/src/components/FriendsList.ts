@@ -14,12 +14,12 @@ type Friend = {
 export class FriendsList extends BaseComponent<FriendsListProps> {
 
   protected render(): string {
-    return `  <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                <div class="bg-blue-600 py-3 px-6">
+    return `  <div class="bg-white rounded-lg shadow-md overflow-hidden h-96 flex flex-col">
+                <div class="bg-blue-600 py-3 px-6 flex-shrink-0">
                     <h3 class="text-lg font-semibold text-white">Your Ping Pong Friends</h3>
                 </div>
-                <div class="p-6">
-                    <div id="add-friends-dropdown">
+                <div class="p-6 flex-1 overflow-y-auto">
+                    <div id="add-friends-dropdown" class="mb-4">
 
                     </div>
                     

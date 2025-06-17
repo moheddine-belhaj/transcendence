@@ -3,10 +3,12 @@ import template from './dashboard-page.html'
 import { Navbar } from '../../components/Navbar';
 import { getCurrentUser, logout} from '../../utils/auth';
 import { WelcomeBanner } from '../../components/WelcomeBanner';
-import { FriendsList, FriendsListProps } from '../../components/FriendsList';
+import { FriendsList } from '../../components/FriendsList';
 import { GameHistory } from '../../components/GameHistory';
 import { DropdownSearch } from '../../components/DropdownSearch';
 import { PongGame } from '../../game/PongGame';
+import { UserService } from '../../api/users';
+import { MatchService } from '../../services/matchService';
 
 
 
@@ -81,26 +83,23 @@ private handleNewGame(): void {
         
         // Initialize game
         new PongGame(player1Id, player2Id);
-        
-        // Handle exit button
+          // Handle exit button
         const exitBtn = gameContainer.querySelector('#exitBtn');
         if (exitBtn) {
-            exitBtn.addEventListener('click', () => {
+            exitBtn.addEventListener('click', async () => {
                 document.body.removeChild(gameContainer);
                 // Refresh game history to show the new match
-                this.displayGameHistory();
+                await this.displayGameHistory();
             });
         }
     }
   protected initEventListeners(): void {
-  }
-
-    async mount(): Promise<HTMLElement> {
+  }    async mount(): Promise<HTMLElement> {
     const element = await super.mount();
     this.displayNavbar()
     this.displayWelcomeBanner()
-    this.displayFriendsList()
-    this.displayGameHistory()
+    await this.displayFriendsList()
+    await this.displayGameHistory()
     return element;
   }
 
@@ -131,51 +130,70 @@ private handleNewGame(): void {
     }
 
   }
-
-  private displayFriendsList(){
-     const friendsList = this.container.querySelector('#friends-list-container');
+  private async displayFriendsList(){
+    try {
+      const user = getCurrentUser();
+      if (user) {
+        // Load friends from API
+        const friends = await UserService.getFriends(user.id);
+        
+        // Map API response to FriendsList format
+        const mappedFriends = friends.map(friend => ({
+          userId: friend.id.toString(),
+          username: friend.name,
+          isOnline: false // You might want to add online status to your API
+        }));
+        
+        // Create new FriendsList with actual friends data
+        this.friendsList = new FriendsList({friends: mappedFriends});
+      }
+    } catch (error) {
+      console.error('Failed to load friends:', error);
+      // Keep the existing empty friendsList if loading fails
+    }
+    
+    const friendsList = this.container.querySelector('#friends-list-container');
     if (friendsList) {
       friendsList.appendChild(this.friendsList.mount());
     }
     const dropdown = this.container.querySelector('#add-friends-dropdown');
     if (dropdown) {
       dropdown.appendChild(this.dropdownSearch.mount());
-  }
-  }
-  private displayGameHistory(){
-         const gameHistory = this.container.querySelector('#game-history-container');
+    }
+  }  private async displayGameHistory(){
+    try {
+      const user = getCurrentUser();
+      if (user) {
+        // Load matches from API
+        const matches = await MatchService.getUserMatches(user.id);
+        
+        // Load all users to get opponent names
+        const allUsers = await UserService.getAllUsers();
+        
+        // Map API response to GameHistory format
+        const mappedMatches = matches.map(match => {
+          const isPlayer1 = match.player1Id === user.id;
+          const opponentId = isPlayer1 ? match.player2Id : match.player1Id;
+          const opponent = allUsers.find(u => u.id === opponentId);
+          
+          return {
+            opponentName: opponent?.name || 'Unknown',
+            opponentPoints: isPlayer1 ? match.scorePlayer2 : match.scorePlayer1,
+            myPoints: isPlayer1 ? match.scorePlayer1 : match.scorePlayer2
+          };
+        });
+        
+        // Create new GameHistory with actual matches data
+        this.gameHistory = new GameHistory({matches: mappedMatches});
+      }
+    } catch (error) {
+      console.error('Failed to load game history:', error);
+      // Keep the existing empty gameHistory if loading fails
+    }
+    
+    const gameHistory = this.container.querySelector('#game-history-container');
     if (gameHistory) {
       gameHistory.appendChild(this.gameHistory.mount());
     }
   }
 }
-
-const fakeFriendsList: FriendsListProps = {
-  friends: [
-    {
-      userId: "1a2b3c4d",
-      username: "johndoe123",
-      isOnline: true
-    },
-    {
-      userId: "5e6f7g8h",
-      username: "janedoe456",
-      isOnline: false
-    },
-    {
-      userId: "9i0j1k2l",
-      username: "alexsmith",
-      isOnline: true
-    },
-    {
-      userId: "3m4n5o6p",
-      username: "sarahmiller",
-      isOnline: false
-    },
-    {
-      userId: "7q8r9s0t",
-      username: "mikejones",
-      isOnline: true
-    }
-  ]
-};

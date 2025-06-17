@@ -1,5 +1,15 @@
-import { API_BASE_URL } from '../routes';
-import { getCurrentUser } from '../utils/auth';
+import { API_BASE_URL } from '../config';
+
+export interface Match {
+    id: number;
+    player1Id: number;
+    player2Id: number;
+    scorePlayer1: number;
+    scorePlayer2: number;
+    winnerId: number | null;
+    createdAt: string;
+    updatedAt: string;
+}
 
 export const MatchService = {
     async createMatch(player1Id: number, player2Id: number) {
@@ -43,18 +53,30 @@ export const MatchService = {
         }
         
         return await response.json();
-    },
+    },    async getUserMatches(userId: number): Promise<Match[]> {
+        const token = localStorage.getItem('token');
+        
+        if (!token) {
+            throw new Error('No authentication token found');
+        }
 
-    async getUserMatches(userId: number) {
         const response = await fetch(`${API_BASE_URL}/api/matches/user/${userId}`, {
             headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
             }
         });
         
+        if (response.status === 401) {
+            // Token expired or invalid
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '/login';
+            throw new Error('Session expired. Please login again.');
+        }
+        
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || 'Failed to fetch matches');
+            throw new Error('Failed to fetch matches');
         }
         
         return await response.json();

@@ -34,5 +34,34 @@ export const UserService = {
     }
 
     return response.json();
+  },
+
+  async getFriends(userId: number): Promise<User[]> {
+    const token = localStorage.getItem('token');
+    
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/api/users/friends/list/${userId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (response.status === 401) {
+      // Token expired or invalid
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/login';
+      throw new Error('Session expired. Please login again.');
+    }
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch friends');
+    }
+
+    return response.json();
   }
 };
