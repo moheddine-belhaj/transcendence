@@ -16,12 +16,15 @@ plugins: [
   assetsInclude: ['**/*.html'],
   server: {
     proxy: {
+      
       '/api': {
         target: 'http://localhost:3000',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '/api') // Keep /api in the path
       }
     },
+    host: true,  
+    port: 5173,
      fs: {
       // Allow serving files from project root
       allow: ['..']

@@ -118,6 +118,7 @@ private confirmPassword:string="";
     })
     this.element.querySelector("#confirm-password")?.addEventListener("change", (e)=>{
         this.confirmPassword = (e.target as HTMLInputElement).value
+        console.log(this.confirmPassword);
     })
     this.element.querySelector("form")?.addEventListener("submit", (e)=>{
         e.preventDefault()

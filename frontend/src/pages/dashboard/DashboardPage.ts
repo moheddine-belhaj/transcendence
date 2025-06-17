@@ -4,6 +4,7 @@ import { Navbar } from '../../components/Navbar';
 import { getCurrentUser, logout} from '../../utils/auth';
 import { WelcomeBanner } from '../../components/WelcomeBanner';
 import { FriendsList } from '../../components/FriendsList';
+import { FriendsList } from '../../components/FriendsList';
 import { GameHistory } from '../../components/GameHistory';
 import { DropdownSearch } from '../../components/DropdownSearch';
 import { PongGame } from '../../game/PongGame';
