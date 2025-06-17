@@ -11,7 +11,8 @@ type Form = {
     username:string;
     email:string;
     avatar:string;
-    password?:string;
+    currentPassword?:string;
+    newPassword?:string;
 }
 
 export class UserSettingsForm extends BaseComponent<UserSettingsFormProps> {
@@ -54,7 +55,18 @@ private confirmPassword:string="";
                         value="${this.props.email}" 
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
                         required
+                    >                </div>
+
+                <!-- Current Password -->
+                <div>
+                    <label for="current-password" class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+                    <input 
+                        type="password" 
+                        id="current-password" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                        placeholder="Required to change password"
                     >
+                    <p class="mt-1 text-xs text-gray-500">Required if changing password</p>
                 </div>
 
                 <!-- Password -->
@@ -94,16 +106,18 @@ private confirmPassword:string="";
                 </div>
             </form>
         `;
-  }
-  protected setupEventListeners(): void {
+  }  protected setupEventListeners(): void {
     this.element.querySelector("#name")?.addEventListener("change", (e)=>{
         this.form.username = (e.target as HTMLInputElement).value
     })
     this.element.querySelector("#email")?.addEventListener("change", (e)=>{
         this.form.email = (e.target as HTMLInputElement).value
     })
+    this.element.querySelector("#current-password")?.addEventListener("change", (e)=>{
+        this.form.currentPassword = (e.target as HTMLInputElement).value
+    })
     this.element.querySelector("#password")?.addEventListener("change", (e)=>{
-        this.form.password = (e.target as HTMLInputElement).value
+        this.form.newPassword = (e.target as HTMLInputElement).value
     })
     this.element.querySelector("#confirm-password")?.addEventListener("change", (e)=>{
         this.confirmPassword = (e.target as HTMLInputElement).value
@@ -112,9 +126,15 @@ private confirmPassword:string="";
     this.element.querySelector("form")?.addEventListener("submit", (e)=>{
         e.preventDefault()
         
-        // Validate passwords match if password is being changed
-        if (this.form.password && this.form.password !== this.confirmPassword) {
-            alert('Passwords do not match');
+        // Validate passwords match if new password is being set
+        if (this.form.newPassword && this.form.newPassword !== this.confirmPassword) {
+            alert('New passwords do not match');
+            return;
+        }
+        
+        // Validate current password is provided if trying to change password
+        if (this.form.newPassword && !this.form.currentPassword) {
+            alert('Current password is required to set a new password');
             return;
         }
         
@@ -123,7 +143,8 @@ private confirmPassword:string="";
             detail: {
                 name: this.form.username,
                 email: this.form.email,
-                password: this.form.password || undefined // Only include password if provided
+                currentPassword: this.form.currentPassword || undefined,
+                newPassword: this.form.newPassword || undefined
             }
         });
         this.element.dispatchEvent(updateEvent);

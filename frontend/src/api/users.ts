@@ -9,7 +9,8 @@ export interface User {
 export interface UpdateUserData {
   name?: string;
   email?: string;
-  password?: string;
+  currentPassword?: string;
+  newPassword?: string;
 }
 
 export const UserService = {
