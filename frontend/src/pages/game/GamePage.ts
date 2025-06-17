@@ -405,8 +405,15 @@ class PingPongGame {
             <div style="font-size: 24px; margin-bottom: 20px;">
                 Final Score: ${this.score1} - ${this.score2}
             </div>
-            <div style="font-size: 20px; color: #ccc;">
+            <div style="font-size: 20px; color: #ccc; margin-bottom: 20px;">
                 Press SPACE to play again
+            </div>
+            <div style="margin-top: 20px;">
+                <a href="/dashboard" style="color: #60a5fa; text-decoration: none; font-size: 18px; font-weight: 500; padding: 10px 20px; border: 2px solid #60a5fa; border-radius: 8px; display: inline-block; transition: all 0.3s ease;" 
+                   onmouseover="this.style.backgroundColor='#60a5fa'; this.style.color='white';" 
+                   onmouseout="this.style.backgroundColor='transparent'; this.style.color='#60a5fa';">
+                    ← Back to Dashboard
+                </a>
             </div>
         `;
         
