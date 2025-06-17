@@ -13,17 +13,9 @@
             font-family: Arial, sans-serif;
         }
         
-        #navbar-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-        }
-        
         #gameContainer {
             position: absolute;
-            top: 64px; /* Account for navbar height */
+            top: 0;
             left: 0;
             right: 0;
             bottom: 0;
@@ -63,9 +55,6 @@
     </style>
 </head>
 <body>
-    <!-- Navbar container -->
-    <div id="navbar-container"></div>
-    
     <!-- Game container -->
     <div id="gameContainer">
         <canvas id="renderCanvas"></canvas>
