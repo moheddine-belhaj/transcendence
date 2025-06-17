@@ -5,6 +5,7 @@ import { getCurrentUser, logout} from '../../utils/auth';
 import { WelcomeBanner } from '../../components/WelcomeBanner';
 import { FriendsList, FriendsListProps } from '../../components/FriendsList';
 import { GameHistory } from '../../components/GameHistory';
+import { DropdownSearch } from '../../components/DropdownSearch';
 
 
 
@@ -14,7 +15,7 @@ export class DashBoardPage extends BasePage {
   private welcomeBanner: WelcomeBanner
   private friendsList: FriendsList
   private gameHistory: GameHistory
-
+  dropdownSearch:DropdownSearch
   constructor() {
     super();
     const user = getCurrentUser()
@@ -29,7 +30,9 @@ export class DashBoardPage extends BasePage {
     })
     this.friendsList = new FriendsList({friends:[]})
     this.gameHistory = new GameHistory({matches:[]})
+    this.dropdownSearch = new DropdownSearch({})
   }
+
   protected async loadTemplate(): Promise<string> {
     return template
   }
@@ -83,8 +86,11 @@ export class DashBoardPage extends BasePage {
     if (friendsList) {
       friendsList.appendChild(this.friendsList.mount());
     }
+    const dropdown = this.container.querySelector('#add-friends-dropdown');
+    if (dropdown) {
+      dropdown.appendChild(this.dropdownSearch.mount());
   }
-
+  }
   private displayGameHistory(){
          const gameHistory = this.container.querySelector('#game-history-container');
     if (gameHistory) {

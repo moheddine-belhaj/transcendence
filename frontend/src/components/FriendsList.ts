@@ -1,4 +1,5 @@
 import { BaseComponent } from '../core/BaseComponent';
+import { DropdownSearch } from './DropdownSearch';
 
 export type FriendsListProps = {
   friends:Friend[]
@@ -11,21 +12,15 @@ type Friend = {
 }
 
 export class FriendsList extends BaseComponent<FriendsListProps> {
+
   protected render(): string {
     return `  <div class="bg-white rounded-lg shadow-md overflow-hidden">
                 <div class="bg-blue-600 py-3 px-6">
                     <h3 class="text-lg font-semibold text-white">Your Ping Pong Friends</h3>
                 </div>
                 <div class="p-6">
-                    <div class="relative mb-4">
-                        <input 
-                            type="text" 
-                            placeholder="Search friends..." 
-                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 absolute left-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
+                    <div id="add-friends-dropdown">
+
                     </div>
                     
                     <div class="space-y-3" style="">
@@ -46,12 +41,12 @@ export class FriendsList extends BaseComponent<FriendsListProps> {
                                 Challenge
                             </button>
                         </div>` )
-                        }): `        <div class="flex flex-col items-center justify-center py-12 text-center">
+                        }): `        <div class="flex flex-col items-center justify-center py-11 text-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
             </svg>
-            <h4 class="text-lg font-medium text-gray-700 mb-1">No Friends Yet</h4>
-            <p class="text-gray-500 mb-4">Start adding friends to challenge them to ping pong matches!</p>
+            <h4 class="text-lg font-medium text-gray-700 mb-2">No Friends Yet</h4>
+            <p class="text-gray-500 mb-2">Start adding friends to challenge them to ping pong matches!</p>
             <button class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition duration-200">
                 Find Friends
             </button>

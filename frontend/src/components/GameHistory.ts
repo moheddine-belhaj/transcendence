@@ -68,9 +68,6 @@ export class GameHistory extends BaseComponent<GameHistoryProps> {
                         </svg>
                         <h4 class="text-lg font-medium text-gray-700 mb-1">No Matches Played Yet</h4>
                         <p class="text-gray-500 mb-4">Start playing to track your ping pong matches and statistics!</p>
-                        <a href="#" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition duration-200">
-                            Start New Game
-                        </a>
                     </div>` }                  
                     </div>
                     

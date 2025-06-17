@@ -19,9 +19,6 @@ export class Navbar extends BaseComponent<NavbarProps> {
             </div>
             
             <div class="flex items-center space-x-4">
-              <button id="new-game-btn" class="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition duration-200">
-                New Game
-              </button>
               
               <div class="relative ml-3">
                 <div id="user-profile" class="flex items-center space-x-2 cursor-pointer">
