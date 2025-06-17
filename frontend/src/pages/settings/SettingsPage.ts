@@ -1,6 +1,7 @@
 import { UserSettingsForm } from '../../components/UserSettingsForm';
 import { BasePage } from '../../core/BasePage';
 import { getCurrentUser } from '../../utils/auth';
+import { UserService } from '../../api/users';
 import template from './settings-page.html'
 
 export class UserSettingsPage extends BasePage {
@@ -29,26 +30,58 @@ async mount(): Promise<HTMLElement> {
   protected initEventListeners(): void {
 
   }
-
   displayForm(){
     const formContainer = this.container.querySelector('#form-container');
     if (formContainer) {
-      formContainer.appendChild(this.form.mount());
-    return formContainer;
+      const formElement = this.form.mount();
+      formContainer.appendChild(formElement);
+        // Listen for the user-update event
+      formElement.addEventListener('user-update', (e: Event) => {
+        const customEvent = e as CustomEvent;
+        this.handleUserUpdate(customEvent.detail);
+      });
+      
+      return formContainer;
+    }
   }
-
-//   private async handleSubmit(){
-//     try {
-//           const result = await AuthService.login(this.loginForm.email, this.loginForm.password);
-//           if (!result.access_token) {
-//             throw new Error('Access token missing from login response');
-//           }
-//           localStorage.setItem('token', result.access_token);
-//           localStorage.setItem('user', JSON.stringify(result.user));
-//           this.navigateTo('/dashboard')
-//         }
-//       catch(e){
-//         alert("Could not login with these credentials")
-//       }
+  
+  private async handleUserUpdate(userData: any) {
+    try {
+      const user = getCurrentUser();
+      if (!user) {
+        alert('User not found. Please login again.');
+        this.navigateTo('/login');
+        return;
+      }
+      
+      // Show loading state
+      const submitButton = this.container.querySelector('button[type="submit"]') as HTMLButtonElement;
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = 'Saving...';
+      }
+      
+      // Call the update API
+      const updatedUser = await UserService.updateUser(user.id, userData);
+      
+      // Update localStorage with new user data
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      
+      // Show success message
+      alert('Profile updated successfully!');
+      
+      // Optionally redirect to dashboard
+      this.navigateTo('/dashboard');
+      
+    } catch (error) {
+      console.error('Failed to update user:', error);
+      alert('Failed to update profile. Please try again.');
+    } finally {      // Reset button state
+      const submitButton = this.container.querySelector('button[type="submit"]') as HTMLButtonElement;
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Save Changes';
+      }
+    }
   }
 }
