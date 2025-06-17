@@ -1,9 +1,12 @@
+import { GamePage } from './components/GamePage';
 import { BasePage } from './core/BasePage';
 import { DashBoardPage } from './pages/dashboard/DashboardPage';
 import { LoginPage } from './pages/login/LoginPage';
 import { NotFoundPage } from './pages/not-found/NotFoundPage';
 import { RegisterPage } from './pages/RegisterPage/RegisterPage';
 import { UserSettingsPage } from './pages/settings/SettingsPage';
+
+export const API_BASE_URL = 'http://localhost:3000';
 
 export const appRoutes = {
   '/':{ 
@@ -22,6 +25,10 @@ export const appRoutes = {
       page: DashBoardPage,
       requiresAuth: true
     },
+    '/game': {
+    page: GamePage,
+    requiresAuth: true,
+  },
   '/settings': {
     page: UserSettingsPage,
     requiresAuth: true

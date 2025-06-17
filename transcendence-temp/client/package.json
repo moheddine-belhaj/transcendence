@@ -1,0 +1,19 @@
+{
+  "name": "pong-client",
+  "version": "1.0.0",
+  "description": "Babylon.js Pong game client",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@babylonjs/core": "^6.33.1",
+    "@babylonjs/gui": "^6.33.1",
+    "socket.io-client": "^4.7.5"
+  },
+  "devDependencies": {
+    "vite": "^5.0.8"
+  }
+} 

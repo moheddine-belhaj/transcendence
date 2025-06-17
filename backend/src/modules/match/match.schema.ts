@@ -27,16 +27,16 @@ const updateMatchSchema = z.object({
   winnerId: z.number().optional()
 });
 
-// // Response schemas
-// const matchResponseSchema = z.object({
-//   id: z.number(),
-//   ...matchCore,
-//   scorePlayer1: z.number(),
-//   scorePlayer2: z.number(),
-//   winnerId: z.number().nullable(),
-//   status: z.string(),
-//   matchDate: z.string().datetime()
-// });
+// Response schemas
+const matchResponseSchema = z.object({
+  id: z.number(),
+  ...matchCore,
+  scorePlayer1: z.number(),
+  scorePlayer2: z.number(),
+  winnerId: z.number().nullable(),
+  status: z.string(),
+  matchDate: z.string().datetime()
+});
 
 
 // Export types
@@ -44,7 +44,7 @@ export type CreateMatchInput = z.infer<typeof createMatchSchema>;
 export type UpdateMatchInput = z.infer<typeof updateMatchSchema>;
 
 
-const matchResponseSchema = z.object({
+const matchResponseSchemaresult = z.object({
   id: z.number(),
   player1Id: z.number(),
   player2Id: z.number(),
@@ -69,7 +69,7 @@ const matchResponseSchema = z.object({
   matchDate: z.string().datetime()
 });
 
-const matchesResponseSchema = z.array(matchResponseSchema);
+const matchesResponseSchema = z.array(matchResponseSchemaresult);
 
 // Build and export schemas
 export const { schemas: matchSchemas, $ref } = buildJsonSchemas({
