@@ -7,7 +7,19 @@ export class GamePage extends BasePage {
   }
   private game: PongGame | null = null;
 
+  private getUrlParams() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return {
+      player1Id: parseInt(urlParams.get('player1') || '1'),
+      player2Id: parseInt(urlParams.get('player2') || '2'),
+      player1Name: urlParams.get('player1Name') || 'Player 1',
+      player2Name: urlParams.get('player2Name') || 'Player 2'
+    };
+  }
+
   async mount() {
+    const { player1Id, player2Id, player1Name, player2Name } = this.getUrlParams();
+    
     const container = document.createElement('div');
     container.id = 'game-container';
     container.innerHTML = `
@@ -15,19 +27,20 @@ export class GamePage extends BasePage {
         <canvas id="renderCanvas"></canvas>
         
         <div id="ui">
-          <div id="playerInfo">Waiting for connection...</div>
+          <div id="playerInfo">${player1Name} vs ${player2Name}</div>
           <div id="score">Score: 0 - 0</div>
-          <div id="gameStatus">Waiting for players...</div>
+          <div id="gameStatus">Game started!</div>
         </div>
         
         <div id="instructions">
-          <div>Player 1: Use W/S or ↑/↓ to move paddle</div>
-          <div>Player 2: Use ↑/↓ to move paddle</div>
+          <div>Player 1 (${player1Name}): Use W/S or ↑/↓ to move paddle</div>
+          <div>Player 2 (${player2Name}): Use ↑/↓ to move paddle</div>
         </div>
         
         <div id="gameMessage" class="game-message" style="display: none;">
           <div id="messageText"></div>
           <button id="restartBtn" style="display: none;">Restart Game</button>
+          <button id="exitBtn">Exit to Dashboard</button>
         </div>
       </div>
     `;
@@ -107,13 +120,19 @@ export class GamePage extends BasePage {
         background: #45a049;
       }
     `;
-    container.appendChild(style);
-
-    // Initialize the game after the DOM is ready
+    container.appendChild(style);    // Initialize the game after the DOM is ready
     setTimeout(() => {
-      // Replace 1 and 2 with actual player IDs as needed
-      this.game = new PongGame(1, 2);
+      // Use actual player IDs from URL parameters
+      this.game = new PongGame(player1Id, player2Id);
     }, 0);
+
+    // Handle exit button
+    const exitBtn = container.querySelector('#exitBtn');
+    if (exitBtn) {
+      exitBtn.addEventListener('click', () => {
+        this.navigateTo('/dashboard');
+      });
+    }
 
     return container;
   }
