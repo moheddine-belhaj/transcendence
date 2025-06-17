@@ -29,7 +29,7 @@ class PingPongGame {
     private player1Name: string;
     private player2Name: string;
     
-    private onPlayerWin: ((winner: string, loser: string) => void) | null = null;
+    private onPlayerWin: ((winner: string, loser: string, winnerScore: number, loserScore: number) => void) | null = null;
     
     private gameWidth: number = 20;
     private gameHeight: number = 12;
@@ -42,7 +42,7 @@ class PingPongGame {
     
     private keys: { [key: string]: boolean } = {};
 
-    constructor(canvasId: string, player1Name: string = 'Player 1', player2Name: string = 'Player 2', onPlayerWin?: (winner: string, loser: string) => void) {
+    constructor(canvasId: string, player1Name: string = 'Player 1', player2Name: string = 'Player 2', onPlayerWin?: (winner: string, loser: string, winnerScore: number, loserScore: number) => void) {
         this.canvas = document.getElementById(canvasId) as HTMLCanvasElement;
         this.player1Name = player1Name;
         this.player2Name = player2Name;
@@ -365,10 +365,12 @@ class PingPongGame {
         
         const winner = this.score1 >= this.winningScore ? this.player1Name : this.player2Name;
         const loser = this.score1 >= this.winningScore ? this.player2Name : this.player1Name;
+        const winnerScore = this.score1 >= this.winningScore ? this.score1 : this.score2;
+        const loserScore = this.score1 >= this.winningScore ? this.score2 : this.score1;
         const winnerColor = this.score1 >= this.winningScore ? '#00ff00' : '#ff0000';
         
         if (this.onPlayerWin) {
-            this.onPlayerWin(winner, loser);
+            this.onPlayerWin(winner, loser, winnerScore, loserScore);
         }
         
         this.showWinningScreen(winner, winnerColor);
@@ -482,10 +484,12 @@ export class GamePage extends BasePage {
         });
     }
 
-    private onPlayerWin(winner: string, loser: string): void {
+    private onPlayerWin(winner: string, loser: string, winnerScore: number, loserScore: number): void {
         // TODO: submit score to backend
         console.log(`Winner: ${winner}`);
         console.log(`Loser: ${loser}`);
+        console.log(`Winner Score: ${winnerScore}`);
+        console.log(`Loser Score: ${loserScore}`);
         // Add additional win handling logic here as needed
     }
 
