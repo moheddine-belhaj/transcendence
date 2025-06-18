@@ -24,7 +24,7 @@ class PingPongGame {
     private gameEnded: boolean = false;
     private score1: number = 0;
     private score2: number = 0;
-    private winningScore: number = 2;
+    private winningScore: number = 5;
     
     private player1Name: string;
     private player2Name: string;
