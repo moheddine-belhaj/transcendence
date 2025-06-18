@@ -1,0 +1,9 @@
+http.host: "0.0.0.0"
+xpack.monitoring.elasticsearch.hosts: [ "http://es01:9200" ]
+
+xpack.monitoring.enabled: false
+xpack.monitoring.collection.interval: 10s
+xpack.monitoring.elasticsearch.username: ${ELASTIC_USER}
+xpack.monitoring.elasticsearch.password: ${ELASTIC_PASSWORD}
+path.config: /usr/share/logstash/pipeline
+path.logs: /usr/share/logstash/logs
