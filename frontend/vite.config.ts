@@ -18,7 +18,8 @@ plugins: [
     proxy: {
       
       '/api': {
-        target: 'http://localhost:3000',
+        // used to be target: 'http://localhost:3000'
+        target: 'http://host.docker.internal:3000',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '/api') // Keep /api in the path
       }
