@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ping Pong Game - Babylon.js</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #1f1d1d;
+            font-family: Arial, sans-serif;
+        }
+        
+        #gameContainer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+        
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+        }
+        
+        #gameUI {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            z-index: 100;
+        }
+        
+        #instructions {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            text-align: center;
+            z-index: 100;
+        }
+        
+        .score {
+            display: inline-block;
+            margin: 0 30px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Game container -->
+    <div id="gameContainer">
+        <canvas id="renderCanvas"></canvas>
+        
+        <div id="gameUI">
+            <span class="score"><span id="player1Label">Player 1</span>: <span id="score1">0</span></span>
+            <span class="score"><span id="player2Label">Player 2</span>: <span id="score2">0</span></span>
+        </div>
+        
+        <div id="instructions">
+            <p><span id="player1Instructions">Player 1</span>: Use Arrow Keys (Up/Down) | <span id="player2Instructions">Player 2</span>: Use W/S Keys</p>
+            <p>Press SPACE to start/restart the game</p>
+        </div>
+    </div>
+
+    <!-- Babylon.js CDN -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="game.js"></script>
+</body>
+</html> 
